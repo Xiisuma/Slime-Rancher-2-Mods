@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "Mods SR2/**"
+      - "Dependencies/**"
       - ".github/workflows/build-sr2.yml"
   workflow_dispatch:
 
@@ -21,14 +22,13 @@ jobs:
 
       - name: Check dependencies exist
         run: |
-          dep_dir="Mods SR2/PondUpgrades/Dependencies"
-          if [ ! -d "$dep_dir" ] || [ -z "$(ls -A $dep_dir/*.dll 2>/dev/null)" ]; then
-            echo "::error::Dependencies DLLs not found in $dep_dir/"
-            echo "::error::See Mods SR2/PondUpgrades/Dependencies/README.md for instructions"
+          if [ ! -d "Dependencies" ] || [ -z "$(ls -A Dependencies/*.dll 2>/dev/null)" ]; then
+            echo "::error::Dependencies DLLs not found in Dependencies/"
+            echo "::error::See Dependencies/README.md for instructions"
             exit 1
           fi
           echo "Dependencies found:"
-          ls "$dep_dir"/*.dll
+          ls Dependencies/*.dll
 
       - name: Build Pond Upgrades
         run: |
