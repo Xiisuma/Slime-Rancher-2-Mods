@@ -20,6 +20,16 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
+      - name: Check dependencies exist
+        run: |
+          if [ ! -d "Dependencies" ] || [ -z "$(ls -A Dependencies/*.dll 2>/dev/null)" ]; then
+            echo "::error::Dependencies DLLs not found in Dependencies/"
+            echo "::error::See Dependencies/README.md for instructions"
+            exit 1
+          fi
+          echo "Dependencies found:"
+          ls Dependencies/*.dll
+
       - name: Build Pond Upgrades
         run: |
           dotnet build "Mods SR2/PondUpgrades/SlimePondUpgradesSR2.csproj" \
@@ -31,6 +41,12 @@ jobs:
           dotnet build "Mods SR2/LuckyPlorts/LuckyPlortsSR2.csproj" \
             -c Release \
             -o "Mods SR2/LuckyPlorts"
+
+      - name: Build Twinkle Slimes
+        run: |
+          dotnet build "Mods SR2/TwinkleSlime/TwinkleSlimeSR2.csproj" \
+            -c Release \
+            -o "Mods SR2/TwinkleSlime"
 
       - name: Upload Pond Upgrades DLL
         uses: actions/upload-artifact@v4
@@ -44,4 +60,11 @@ jobs:
         with:
           name: LuckyPlortsSR2
           path: "Mods SR2/LuckyPlorts/LuckyPlortsSR2.dll"
+          if-no-files-found: error
+
+      - name: Upload Twinkle Slimes DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: TwinkleSlimeSR2
+          path: "Mods SR2/TwinkleSlime/TwinkleSlimeSR2.dll"
           if-no-files-found: error
