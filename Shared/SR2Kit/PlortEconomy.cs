@@ -46,6 +46,7 @@ public static class PlortEconomy
             director._currValueMap.Add(plort, new PlortEconomyDirector.CurrValueEntry(value, value, value, fullSaturation));
 
         AddToMarketUI(plort);
+        MarketCleanup.Track(plort);
         MelonLogger.Msg($"[SR2Kit] Registered {plort.referenceId} in the market at {value} newbucks.");
     }
 

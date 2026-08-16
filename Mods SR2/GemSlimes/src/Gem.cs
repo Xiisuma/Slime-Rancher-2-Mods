@@ -295,29 +295,9 @@ public sealed class Gem
         return tinted;
     }
 
-    private void Recolor(GameObject prefab)
-    {
-        foreach (Renderer renderer in prefab.GetComponentsInChildren<Renderer>(true))
-        {
-            foreach (Material material in renderer.materials)
-            {
-                if (material != null) Tint(material);
-            }
-        }
-    }
+    private void Recolor(GameObject prefab) => SR2Kit.Recolor.Apply(prefab, Top, Middle, Facet, glossy: true);
 
-    private void Tint(Material material)
-    {
-        if (material.HasProperty("_TopColor")) material.SetColor("_TopColor", Top);
-        if (material.HasProperty("_MiddleColor")) material.SetColor("_MiddleColor", Middle);
-        if (material.HasProperty("_BottomColor")) material.SetColor("_BottomColor", Facet);
-        if (material.HasProperty("_Color")) material.SetColor("_Color", Middle);
-
-        // Gems catch the light where a slime does not.
-        if (material.HasProperty("_SpecColor")) material.SetColor("_SpecColor", Top);
-        if (material.HasProperty("_Shininess")) material.SetFloat("_Shininess", 1f);
-        if (material.HasProperty("_Gloss")) material.SetFloat("_Gloss", 1f);
-    }
+    private void Tint(Material material) => SR2Kit.Recolor.Tint(material, Top, Middle, Facet, glossy: true);
 
     private static Color Hex(string hex)
     {

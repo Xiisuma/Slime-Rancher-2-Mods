@@ -142,19 +142,7 @@ public class Main : MelonMod
     }
 
     private static void Recolor(GameObject prefab, Color top, Color middle, Color bottom)
-    {
-        foreach (MeshRenderer renderer in prefab.GetComponentsInChildren<MeshRenderer>(true))
-        {
-            foreach (Material material in renderer.materials)
-            {
-                if (material == null) continue;
-                if (material.HasProperty("_TopColor")) material.SetColor("_TopColor", top);
-                if (material.HasProperty("_MiddleColor")) material.SetColor("_MiddleColor", middle);
-                if (material.HasProperty("_BottomColor")) material.SetColor("_BottomColor", bottom);
-                if (material.HasProperty("_Color")) material.SetColor("_Color", middle);
-            }
-        }
-    }
+        => SR2Kit.Recolor.Apply(prefab, top, middle, bottom);
 
     // ---------------------------------------------------------------- Per-save setup
 

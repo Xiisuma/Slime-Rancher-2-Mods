@@ -35,8 +35,10 @@ internal static class Patch_UpdateAvailability
     {
         if (!UpgradeShop.TryGetEntry(__instance._upgrade, out UpgradeShop.Entry _)) return;
 
-        bool available = !plotInfoProvider.HasUpgrade(__instance._upgrade);
-        __instance.IsAvailable = UpgradeShop.Func(() => available);
+        // Evaluated on every call rather than captured: the menu asks again after a purchase, and a
+        // snapshot taken when the page was built would still claim the upgrade is for sale.
+        LandPlot.Upgrade upgrade = __instance._upgrade;
+        __instance.IsAvailable = UpgradeShop.Func(() => !plotInfoProvider.HasUpgrade(upgrade));
     }
 }
 
@@ -47,9 +49,13 @@ internal static class Patch_UpdateHidden
     {
         if (!UpgradeShop.TryGetEntry(__instance._upgrade, out UpgradeShop.Entry entry)) return;
 
-        bool hidden = plotInfoProvider.HasUpgrade(__instance._upgrade)
-                      || (entry.Prerequisite != null && !entry.Prerequisite(plotInfoProvider));
-        __instance.IsHidden = UpgradeShop.Func(() => hidden);
+        // Owned upgrades stay on the page: that is where the game draws the "bought" check mark.
+        // Only an upgrade whose prerequisite is missing is worth hiding.
+        LandPlot.Upgrade upgrade = __instance._upgrade;
+        __instance.IsHidden = UpgradeShop.Func(() =>
+            entry.Prerequisite != null
+            && !plotInfoProvider.HasUpgrade(upgrade)
+            && !entry.Prerequisite(plotInfoProvider));
     }
 }
 
