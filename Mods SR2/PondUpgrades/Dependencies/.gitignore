@@ -1,0 +1,4 @@
+# Ignore dependency DLLs (game files — don't commit to public repos)
+# Remove this line if your repo is private and you want CI to access them
+*.dll
+!.gitignore

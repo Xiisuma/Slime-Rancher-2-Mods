@@ -1,0 +1,44 @@
+name: Build SR2 Mods
+
+on:
+  push:
+    paths:
+      - "Mods SR2/**"
+      - ".github/workflows/build-sr2.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Check dependencies exist
+        run: |
+          dep_dir="Mods SR2/PondUpgrades/Dependencies"
+          if [ ! -d "$dep_dir" ] || [ -z "$(ls -A $dep_dir/*.dll 2>/dev/null)" ]; then
+            echo "::error::Dependencies DLLs not found in $dep_dir/"
+            echo "::error::See Mods SR2/PondUpgrades/Dependencies/README.md for instructions"
+            exit 1
+          fi
+          echo "Dependencies found:"
+          ls "$dep_dir"/*.dll
+
+      - name: Build Pond Upgrades
+        run: |
+          dotnet build "Mods SR2/PondUpgrades/SlimePondUpgradesSR2.csproj" \
+            -c Release \
+            -o "Mods SR2/PondUpgrades"
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: SlimePondUpgradesSR2
+          path: "Mods SR2/PondUpgrades/SlimePondUpgradesSR2.dll"
+          if-no-files-found: error
