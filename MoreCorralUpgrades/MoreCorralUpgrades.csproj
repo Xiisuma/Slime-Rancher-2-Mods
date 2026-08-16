@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>disable</Nullable>
+    <AssemblyName>MoreCorralUpgrades</AssemblyName>
+    <RootNamespace>MoreCorralUpgrades</RootNamespace>
+    <Version>1.0.0</Version>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoWarn>$(NoWarn);CS0649;CS0169</NoWarn>
+  </PropertyGroup>
+
+  <!--
+    Path to the Slime Rancher 2 install (the folder containing SlimeRancher2.exe).
+    Override on the command line:  dotnet build -p:GamePath="D:\Games\Slime Rancher 2"
+    or set the SR2_PATH environment variable.
+  -->
+  <PropertyGroup>
+    <GamePath Condition="'$(GamePath)' == '' AND '$(SR2_PATH)' != ''">$(SR2_PATH)</GamePath>
+    <GamePath Condition="'$(GamePath)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Slime Rancher 2</GamePath>
+    <Il2CppAssemblies>$(GamePath)\MelonLoader\Il2CppAssemblies</Il2CppAssemblies>
+    <MelonLoaderPath>$(GamePath)\MelonLoader\net6</MelonLoaderPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="src\**\*.cs" />
+    <EmbeddedResource Include="assets\**\*.png" />
+  </ItemGroup>
+
+  <Target Name="CheckGamePath" BeforeTargets="BeforeBuild">
+    <Error Condition="!Exists('$(Il2CppAssemblies)')"
+           Text="Il2CppAssemblies not found at '$(Il2CppAssemblies)'. Set GamePath or SR2_PATH to your Slime Rancher 2 install (MelonLoader must have been run once to generate the assemblies)." />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="$(Il2CppAssemblies)\*.dll">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="$(MelonLoaderPath)\MelonLoader.dll">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="$(MelonLoaderPath)\0Harmony.dll">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="$(MelonLoaderPath)\Il2CppInterop.Runtime.dll">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="$(MelonLoaderPath)\Il2CppInterop.Common.dll">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Copy the built mod straight into the game's Mods folder when the install is present. -->
+  <Target Name="DeployToGame" AfterTargets="Build" Condition="'$(DeployToGame)' != 'false' AND Exists('$(GamePath)\Mods')">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GamePath)\Mods" />
+  </Target>
+
+</Project>
