@@ -29,15 +29,13 @@ public static class IconRenderer
     {
         if (prefab == null) return null;
 
-        GameObject subject = Object.Instantiate(prefab, Studio, Quaternion.identity);
-        subject.hideFlags = HideFlags.HideAndDontSave;
+        // Nothing of the prefab is instantiated: only its geometry is copied onto bare objects.
+        // Cloning the prefab itself would wake a real slime — it registers with the game's
+        // directors, other mods' patches fire on it, and tearing it back down crashes the game.
+        GameObject subject = BuildStandIn(prefab);
+        if (subject == null) return null;
 
-        // Deactivate before anything else: an active clone of a slime prefab runs its Awake, which
-        // registers an actor with the game's directors and leaves trampoline errors in the log.
-        subject.SetActive(false);
-        StripBehaviours(subject);
         SetLayer(subject, IsolationLayer);
-        subject.SetActive(true);
 
         Bounds bounds = Frame(subject);
         if (bounds.extents == Vector3.zero)
@@ -91,19 +89,47 @@ public static class IconRenderer
     }
 
     /// <summary>
-    /// Strips the gameplay components off the stand-in. A slime prefab wakes up hungry, physical and
-    /// registered with the game's directors; the copy only has to hold still and be visible.
+    /// Builds a bare copy of the prefab's visible geometry: one child per mesh, carrying the mesh
+    /// and its materials and nothing else. No game component is ever instantiated.
     /// </summary>
-    private static void StripBehaviours(GameObject subject)
+    private static GameObject BuildStandIn(GameObject prefab)
     {
-        foreach (Rigidbody body in subject.GetComponentsInChildren<Rigidbody>(true))
-            body.isKinematic = true;
+        GameObject root = new("SR2Kit_IconSubject") { hideFlags = HideFlags.HideAndDontSave };
+        root.transform.position = Studio;
+        int parts = 0;
 
-        foreach (Collider collider in subject.GetComponentsInChildren<Collider>(true))
-            collider.enabled = false;
+        foreach (MeshFilter filter in prefab.GetComponentsInChildren<MeshFilter>(true))
+        {
+            MeshRenderer source = filter.GetComponent<MeshRenderer>();
+            if (filter.sharedMesh == null || source == null) continue;
+            parts += CopyMesh(root, filter.transform, filter.sharedMesh, source.sharedMaterials);
+        }
 
-        foreach (SRBehaviour behaviour in subject.GetComponentsInChildren<SRBehaviour>(true))
-            behaviour.enabled = false;
+        foreach (SkinnedMeshRenderer skinned in prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            if (skinned.sharedMesh == null) continue;
+            parts += CopyMesh(root, skinned.transform, skinned.sharedMesh, skinned.sharedMaterials);
+        }
+
+        if (parts != 0) return root;
+
+        Object.DestroyImmediate(root);
+        return null;
+    }
+
+    /// <summary>Adds one mesh to the stand-in, keeping its offset relative to the prefab's root.</summary>
+    private static int CopyMesh(GameObject root, Transform source, Mesh mesh,
+        Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Material> materials)
+    {
+        GameObject part = new(source.name) { hideFlags = HideFlags.HideAndDontSave };
+        part.transform.SetParent(root.transform, false);
+        part.transform.localPosition = source.localPosition;
+        part.transform.localRotation = source.localRotation;
+        part.transform.localScale = source.lossyScale;
+
+        part.AddComponent<MeshFilter>().sharedMesh = mesh;
+        part.AddComponent<MeshRenderer>().sharedMaterials = materials;
+        return 1;
     }
 
     private static void SetLayer(GameObject subject, int layer)

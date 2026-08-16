@@ -26,12 +26,19 @@ public static class PrefabHost
         }
     }
 
-    /// <summary>Clones <paramref name="original"/> into the prefab host, inactive and renamed.</summary>
+    /// <summary>
+    /// Clones <paramref name="original"/> into the prefab host and renames it.
+    ///
+    /// The clone itself stays enabled: the host it hangs under is inactive, which is what keeps it
+    /// dormant. Disabling the clone as well would make every actor instantiated from it come out
+    /// disabled — its components never wake, and the game throws inside
+    /// <c>SlimeEmotions.InitModel</c> the moment such an actor spawns.
+    /// </summary>
     public static GameObject Clone(GameObject original, string name)
     {
         GameObject clone = Object.Instantiate(original, Root, false);
         clone.name = name;
-        clone.SetActive(false);
+        clone.SetActive(true);
         return clone;
     }
 }
