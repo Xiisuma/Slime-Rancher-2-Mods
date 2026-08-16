@@ -29,12 +29,21 @@ Adds eight extra upgrades to the corral purchase menu.
 
 ## Build
 
+References are taken from the shared `Dependencies/` folder at the repo root — fill it first, see
+[Dependencies/README.md](../../Dependencies/README.md).
+
+```bash
+dotnet build -c Release
+```
+
+If `Dependencies/` is empty, the build falls back to a local install:
+
 ```bash
 dotnet build -c Release -p:GamePath="C:\Program Files (x86)\Steam\steamapps\common\Slime Rancher 2"
 ```
 
 `GamePath` (or the `SR2_PATH` environment variable) must point at the folder containing
-`SlimeRancher2.exe`. When the install is found, the build copies the DLL into `Mods` automatically;
+`SlimeRancher2.exe`. When that install is found, the build copies the DLL into its `Mods` folder;
 pass `-p:DeployToGame=false` to skip that.
 
 ## How the port works

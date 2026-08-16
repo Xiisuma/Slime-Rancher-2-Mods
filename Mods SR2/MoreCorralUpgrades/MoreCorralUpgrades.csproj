@@ -14,11 +14,15 @@
   </PropertyGroup>
 
   <!--
-    Path to the Slime Rancher 2 install (the folder containing SlimeRancher2.exe).
-    Override on the command line:  dotnet build -p:GamePath="D:\Games\Slime Rancher 2"
+    References come from the shared Dependencies folder at the repo root (see its README for how to
+    fill it). If it is empty, the build falls back to a local Slime Rancher 2 install:
+      dotnet build -p:GamePath="D:\Games\Slime Rancher 2"
     or set the SR2_PATH environment variable.
   -->
   <PropertyGroup>
+    <DepDir>$(MSBuildThisFileDirectory)..\..\Dependencies</DepDir>
+    <UseDepDir Condition="Exists('$(DepDir)\Assembly-CSharp.dll')">true</UseDepDir>
+
     <GamePath Condition="'$(GamePath)' == '' AND '$(SR2_PATH)' != ''">$(SR2_PATH)</GamePath>
     <GamePath Condition="'$(GamePath)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Slime Rancher 2</GamePath>
     <Il2CppAssemblies>$(GamePath)\MelonLoader\Il2CppAssemblies</Il2CppAssemblies>
@@ -30,12 +34,18 @@
     <EmbeddedResource Include="assets\**\*.png" />
   </ItemGroup>
 
-  <Target Name="CheckGamePath" BeforeTargets="BeforeBuild">
-    <Error Condition="!Exists('$(Il2CppAssemblies)')"
-           Text="Il2CppAssemblies not found at '$(Il2CppAssemblies)'. Set GamePath or SR2_PATH to your Slime Rancher 2 install (MelonLoader must have been run once to generate the assemblies)." />
+  <Target Name="CheckReferences" BeforeTargets="BeforeBuild">
+    <Error Condition="'$(UseDepDir)' != 'true' AND !Exists('$(Il2CppAssemblies)')"
+           Text="No references found. Fill '$(DepDir)' (see Dependencies/README.md) or set GamePath / SR2_PATH to a Slime Rancher 2 install with MelonLoader installed." />
   </Target>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(UseDepDir)' == 'true'">
+    <Reference Include="$(DepDir)\*.dll">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseDepDir)' != 'true'">
     <Reference Include="$(Il2CppAssemblies)\*.dll">
       <Private>false</Private>
     </Reference>
