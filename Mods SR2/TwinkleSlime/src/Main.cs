@@ -78,6 +78,10 @@ public class Main : MelonMod
         LuminaSlimeDefinition = CreateSlime(director, definitions, baseSlime, LuminaSlimeId,
             "l.lumina_slime", "SlimeLumina", LuminaColors, LuminaPlort);
 
+        // Twinkles turn up now and then, luminas rarely — they were the secret variant in SR1.
+        SlimeSpawns.Register(TwinkleSlimeDefinition, 1.5f);
+        SlimeSpawns.Register(LuminaSlimeDefinition, 0.4f);
+
         Log.Msg("Twinkle and Lumina slimes created.");
     }
 
@@ -168,6 +172,45 @@ public class Main : MelonMod
         Translations.Flush();
         PlortEconomy.Register(context.PlortEconomyDirector, TwinklePlort, TwinklePlortValue);
         PlortEconomy.Register(context.PlortEconomyDirector, LuminaPlort, LuminaPlortValue);
+
+        SlimeSpawns.Reset();
+        AssignFavoriteToy();
+    }
+
+    /// <summary>
+    /// The Slime Rancher 1 mod shipped a microphone toy the twinkle slimes loved. A brand new toy
+    /// cannot be bought in Slime Rancher 2 without a real Addressables asset behind it, so the
+    /// slimes adopt an existing musical toy instead — the mechanic is kept, the asset is not.
+    /// </summary>
+    private void AssignFavoriteToy()
+    {
+        if (TwinkleSlimeDefinition == null) return;
+
+        ToyDefinition toy = FindToy("chime") ?? FindToy("music") ?? FindToy("bell") ?? FindToy("");
+        if (toy == null)
+        {
+            Log.Warning("No toy found; the slimes keep the favourite toys of the slime they were cloned from.");
+            return;
+        }
+
+        Il2CppReferenceArray<ToyDefinition> favorites = new(1);
+        favorites[0] = toy;
+        TwinkleSlimeDefinition.FavoriteToyIdents = favorites;
+        if (LuminaSlimeDefinition != null) LuminaSlimeDefinition.FavoriteToyIdents = favorites;
+
+        Log.Msg($"Favourite toy set to {toy.referenceId}.");
+    }
+
+    private static ToyDefinition FindToy(string keyword)
+    {
+        foreach (IdentifiableType type in Lookup.IdentifiableTypes)
+        {
+            ToyDefinition toy = type.TryCast<ToyDefinition>();
+            if (toy == null) continue;
+            if (keyword.Length == 0) return toy;
+            if (toy.referenceId != null && toy.referenceId.ToLowerInvariant().Contains(keyword)) return toy;
+        }
+        return null;
     }
 
     private static Color Hex(string hex)
