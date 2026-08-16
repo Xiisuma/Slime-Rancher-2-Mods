@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 using Il2Cpp;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using UnityEngine;
 
 namespace SR2Kit;
 
@@ -20,6 +21,9 @@ public static class SlimeSpawns
         public float Weight;
         public string HostKeyword;
     }
+
+    /// <summary>How many spawner locations are worth logging before it becomes noise.</summary>
+    private const int LocationLogLimit = 30;
 
     private static readonly List<Entry> Entries = new();
 
@@ -69,8 +73,17 @@ public static class SlimeSpawns
                 grown[set.Members.Length] = new SlimeSet.Member { IdentType = entry.Slime, Weight = entry.Weight };
 
                 set.Members = grown;
-                if (_patched++ == 0)
-                    MelonLoader.MelonLogger.Msg($"[SR2Kit] {entry.Slime.referenceId} now spawns in the wild.");
+                _patched++;
+
+                // Location of every joined spawner, so a player can be told where to look. Capped:
+                // a full ranch streams in hundreds of them.
+                if (_patched <= LocationLogLimit)
+                {
+                    Vector3 position = spawner.transform.position;
+                    MelonLoader.MelonLogger.Msg(
+                        $"[SR2Kit] {entry.Slime.referenceId} spawns in {spawner.gameObject.scene.name} " +
+                        $"at ({position.x:F0}, {position.y:F0}, {position.z:F0}).");
+                }
             }
         }
     }

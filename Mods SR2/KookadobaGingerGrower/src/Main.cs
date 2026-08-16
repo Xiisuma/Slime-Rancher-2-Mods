@@ -29,7 +29,12 @@ public class Main : MelonMod
         // before a save is pulled into the plot models), the scene pass only catches the case where
         // the save translation was not built yet.
         Hooks.OnLookupDirectorReady(_ => Setup());
-        Hooks.OnSceneContextReady(_ => Setup());
+        Hooks.OnSceneContextReady(_ =>
+        {
+            Setup();
+            GingerPatches.Reset();
+            GingerPatches.List();
+        });
 
         LoggerInstance.Msg("Kookadoba Ginger Grower loaded.");
     }
