@@ -1,0 +1,680 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AssetsLib</name>
+    </assembly>
+    <members>
+        <member name="M:AssetsLib.MeshUtils.CreateMesh(UnityEngine.Vector3[],UnityEngine.Vector2[],System.Int32[],System.Func{UnityEngine.Vector3,UnityEngine.Vector3}[])">
+            <summary>
+            <para>Creates a <see cref="T:UnityEngine.Mesh"/> using the provided vertex, uv and triangle data. For each item in the <paramref name="modifiers"/> a duplicate of the<br/>
+            mesh, depicted by the data provided, is created, applying the respective modifier to the vertices of the duplicate.</para>
+            <para>This is designed to be used for generating a single <see cref="T:UnityEngine.Mesh"/> that is made up of several duplicates of another mesh.</para>
+            <para>Throws an <see cref="T:System.ArgumentException"/> if the length of the <paramref name="vertices"/> is different to the length of the <paramref name="uv"/>.<br/>
+            Throws an <see cref="T:System.IndexOutOfRangeException"/> if one of the triangle indices is outside the <paramref name="vertices"/> array.</para>
+            </summary>
+            <returns>The generated <see cref="T:UnityEngine.Mesh"/></returns>
+            <param name="vertices">the array of vertices from the source mesh</param>
+            <param name="uv">the array of uv points from the source mesh</param>
+            <param name="triangles">the array of triangle data from the source mesh</param>
+            <param name="modifiers">the array of modifiers used for each duplicate of the source mesh</param>
+            <exception cref="T:System.ArgumentException" />
+            <exception cref="T:System.IndexOutOfRangeException" />
+        </member>
+        <member name="M:AssetsLib.MeshUtils.CreateMesh(AssetsLib.MeshData,AssetsLib.MeshModifier[])">
+            <summary>
+            <para>Creates a <see cref="T:UnityEngine.Mesh"/> using the provided <see cref="T:AssetsLib.MeshData"/> object. For each item in the modifiers a duplicate of the<br/>
+            mesh, depicted by the data provided, is created, applying the respective modifier to the duplicate.</para>
+            <para>This is designed to be used for generating a single <see cref="T:UnityEngine.Mesh"/> that is made up of several duplicates of another mesh.</para>
+            </summary>
+            <returns>The generated <see cref="T:UnityEngine.Mesh"/></returns>
+            <param name="data">a <see cref="T:AssetsLib.MeshData"/> object containing the information required to generate a mesh</param>
+            <param name="modifiers">the array of modifiers used for each duplicate of the source mesh</param>
+        </member>
+        <member name="M:AssetsLib.MeshUtils.CreateMesh(AssetsLib.MeshData[])">
+            <summary>
+            <para>Creates a single <see cref="T:UnityEngine.Mesh"/> by combining the contents of all the provided <see cref="T:AssetsLib.MeshData"/> objects</para>
+            </summary>
+            <returns>The generated <see cref="T:UnityEngine.Mesh"/></returns>
+            <param name="datas">an array of <see cref="T:AssetsLib.MeshData"/> objects to be combined</param>
+        </member>
+        <member name="M:AssetsLib.MeshUtils.CreateMesh(System.Collections.Generic.IEnumerable{UnityEngine.Vector3},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{UnityEngine.Vector2},System.Predicate{UnityEngine.Vector3},System.Func{UnityEngine.Vector3,UnityEngine.Vector3})">
+            <summary>
+            <para>Creates a <see cref="T:UnityEngine.Mesh"/> using the provided vertex, uv and triangle data. Points in the mesh that match the<br/>
+            <paramref name="removeAt"/> predicate will be removed, all other points will be modified by the specified modify function</para>
+            <para>This is designed to be used for tweaking a <see cref="T:UnityEngine.Mesh"/></para>
+            <para>Throws an <see cref="T:System.ArgumentException"/> if the length of the <paramref name="vertices"/> is different to the length of the <paramref name="uv"/>.<br/>
+            Throws an <see cref="T:System.IndexOutOfRangeException"/> if one of the triangle indices is outside the <paramref name="vertices"/> array.</para>
+            </summary>
+            <returns>The generated <see cref="T:UnityEngine.Mesh"/></returns>
+            <param name="vertices">the array of vertices from the source mesh</param>
+            <param name="uv">the array of uv points from the source mesh</param>
+            <param name="triangles">the array of triangle data from the source mesh</param>
+            <param name="removeAt">the condition for removing a vertex from the mesh</param>
+            <param name="modify">the change that should occur to each vertex in the mesh</param>
+            <exception cref="T:System.ArgumentException" />
+            <exception cref="T:System.IndexOutOfRangeException" />
+        </member>
+        <member name="M:AssetsLib.MeshUtils.GenerateBoneData(SlimeAppearanceApplicator,SlimeAppearanceObject,System.Single,System.Single)">
+            <summary>
+            <para>Generates a basic set of bone data for provided <see cref="T:UnityEngine.Mesh"/>es and <see cref="T:SlimeAppearanceObject"/>s</para>
+            <para>This is designed to be used for generating the bone weights and configuring the<br/>
+            <see cref="T:SlimeAppearanceObject"/>s for a custom slime model</para>
+            <para>Note: this only works for <see cref="T:SlimeAppearanceObject"/>s that use a <see cref="T:UnityEngine.SkinnedMeshRenderer"/>.<br/>
+            <see cref="T:UnityEngine.MeshFilter"/>s will not be affected</para>
+            </summary>
+            <param name="slimePrefab">the <see cref="T:SlimeAppearanceApplicator"/> from your slime prefab</param>
+            <param name="bodyApp">the <see cref="T:SlimeAppearanceObject"/> of your slime's main body</param>
+            <param name="jiggleAmount">the amount the model will be affected by the slime's movement</param>
+            <param name="scale">the scale to put the model to. This is handy due to model's scale being unaffected by <see cref="P:UnityEngine.Transform.localScale"/></param>
+        </member>
+        <member name="M:AssetsLib.MeshUtils.GenerateBoneData(SlimeAppearanceApplicator,SlimeAppearanceObject,System.Single,System.Single,SlimeAppearanceObject[])">
+            <summary>
+            <para>Generates a basic set of bone data for provided <see cref="T:UnityEngine.Mesh"/>es and <see cref="T:SlimeAppearanceObject"/>s</para>
+            <para>This is designed to be used for generating the bone weights and configuring the<br/>
+            <see cref="T:SlimeAppearanceObject"/>s for a custom slime model</para>
+            <para>Note: this only works for <see cref="T:SlimeAppearanceObject"/>s that use a <see cref="T:UnityEngine.SkinnedMeshRenderer"/>.<br/>
+            <see cref="T:UnityEngine.MeshFilter"/>s will not be affected</para>
+            </summary>
+            <param name="slimePrefab">the <see cref="T:SlimeAppearanceApplicator"/> from your slime prefab</param>
+            <param name="bodyApp">the <see cref="T:SlimeAppearanceObject"/> of your slime's main body</param>
+            <param name="jiggleAmount">the amount the model will be affected by the slime's movement</param>
+            <param name="scale">the scale to put the model to. This is handy due to model's scale being unaffected by <see cref="P:UnityEngine.Transform.localScale"/></param>
+            <param name="appearanceObjects">the additional <see cref="T:SlimeAppearanceObject"/>s that you want the weight data and configuration to be put on</param>
+        </member>
+        <member name="M:AssetsLib.MeshUtils.GenerateBoneData(SlimeAppearanceApplicator,SlimeAppearanceObject,System.Single,System.Single,UnityEngine.Mesh[])">
+            <summary>
+            <para>Generates a basic set of bone data for provided <see cref="T:UnityEngine.Mesh"/>es and <see cref="T:SlimeAppearanceObject"/>s</para>
+            <para>This is designed to be used for generating the bone weights and configuring the<br/>
+            <see cref="T:SlimeAppearanceObject"/>s for a custom slime model</para>
+            <para>Note: this only works for <see cref="T:SlimeAppearanceObject"/>s that use a <see cref="T:UnityEngine.SkinnedMeshRenderer"/>.<br/>
+            <see cref="T:UnityEngine.MeshFilter"/>s will not be affected</para>
+            </summary>
+            <param name="slimePrefab">the <see cref="T:SlimeAppearanceApplicator"/> from your slime prefab</param>
+            <param name="bodyApp">the <see cref="T:SlimeAppearanceObject"/> of your slime's main body</param>
+            <param name="jiggleAmount">the amount the model will be affected by the slime's movement</param>
+            <param name="scale">the scale to put the model to. This is handy due to model's scale being unaffected by <see cref="P:UnityEngine.Transform.localScale"/></param>
+            <param name="AdditionalMesh">an array of additional <see cref="T:UnityEngine.Mesh"/>es that you want the weight data to be put on</param>
+        </member>
+        <member name="M:AssetsLib.MeshUtils.GenerateBoneData(SlimeAppearanceApplicator,SlimeAppearance,System.Single,System.Single,UnityEngine.Mesh[])">
+            <summary>
+            <para>Generates a basic set of bone data for provided <see cref="T:UnityEngine.Mesh"/>es and <see cref="T:SlimeAppearanceObject"/>s</para>
+            <para>This is designed to be used for generating the bone weights and configuring the<br/>
+            <see cref="T:SlimeAppearanceObject"/>s for a custom slime model</para>
+            <para>Note: this only works for <see cref="T:SlimeAppearanceObject"/>s that use a <see cref="T:UnityEngine.SkinnedMeshRenderer"/>.<br/>
+            <see cref="T:UnityEngine.MeshFilter"/>s will not be affected</para>
+            </summary>
+            <param name="slimePrefab">the <see cref="T:SlimeAppearanceApplicator"/> from your slime prefab</param>
+            <param name="appearance">the slime appearance of your slime, the first valid object is assumed to be the slime's body mesh</param>
+            <param name="jiggleAmount">the amount the model will be affected by the slime's movement</param>
+            <param name="scale">the scale to put the model to. This is handy due to model's scale being unaffected by <see cref="P:UnityEngine.Transform.localScale"/></param>
+            <param name="AdditionalMesh">an array of additional <see cref="T:UnityEngine.Mesh"/>es that you want the weight data to be put on</param>
+        </member>
+        <member name="M:AssetsLib.MeshUtils.GenerateBoneData(SlimeAppearanceApplicator,SlimeAppearanceObject,System.Single,System.Single,UnityEngine.Mesh[],SlimeAppearanceObject[])">
+            <summary>
+            <para>Generates a basic set of bone data for provided <see cref="T:UnityEngine.Mesh"/>es and <see cref="T:SlimeAppearanceObject"/>s</para>
+            <para>This is designed to be used for generating the bone weights and configuring the<br/>
+            <see cref="T:SlimeAppearanceObject"/>s for a custom slime model</para>
+            <para>Note: this only works for <see cref="T:SlimeAppearanceObject"/>s that use a <see cref="T:UnityEngine.SkinnedMeshRenderer"/>.<br/>
+            <see cref="T:UnityEngine.MeshFilter"/>s will not be affected</para>
+            </summary>
+            <param name="slimePrefab">the <see cref="T:SlimeAppearanceApplicator"/> from your slime prefab</param>
+            <param name="bodyApp">the <see cref="T:SlimeAppearanceObject"/> of your slime's main body</param>
+            <param name="jiggleAmount">the amount the model will be affected by the slime's movement</param>
+            <param name="scale">the scale to put the model to. This is handy due to model's scale being unaffected by <see cref="P:UnityEngine.Transform.localScale"/></param>
+            <param name="AdditionalMesh">an array of additional <see cref="T:UnityEngine.Mesh"/>es that you want the weight data to be put on</param>
+            <param name="appearanceObjects">the additional <see cref="T:SlimeAppearanceObject"/>s that you want the weight data and configuration to be put on</param>
+        </member>
+        <member name="M:AssetsLib.TextureUtils.LoadImage(System.String,UnityEngine.FilterMode,UnityEngine.TextureWrapMode)">
+            <summary>
+            <para>Loads an image from the embedded resources.</para>
+            <para>Throws a <see cref="T:MissingResourceException"/> if no file is found under the specified name.</para>
+            </summary>
+            <returns>The loaded image</returns>
+            <param name="filename">the name of the file to load (including extention)</param>
+            <exception cref="T:MissingResourceException"/>
+        </member>
+        <member name="M:AssetsLib.TextureUtils.CreateSprite(UnityEngine.Texture2D)">
+            <summary>
+            <para>Creates a basic <see cref="T:UnityEngine.Sprite"/> from the <see cref="T:UnityEngine.Texture2D"/></para>
+            </summary>
+            <returns>The created <see cref="T:UnityEngine.Sprite"/> object</returns>
+        </member>
+        <member name="M:AssetsLib.TextureUtils.GetReadable(UnityEngine.Sprite)">
+            <returns>Creates a readable copy of the <see cref="T:UnityEngine.Sprite"/>.</returns>
+        </member>
+        <member name="M:AssetsLib.TextureUtils.GetReadable(UnityEngine.Texture2D)">
+            <returns>Creates a readable copy of the Texture2D</returns>
+        </member>
+        <member name="M:AssetsLib.TextureUtils.GetReadable(UnityEngine.Cubemap)">
+            <returns>Creates a readable copy of the <see cref="T:UnityEngine.Cubemap"/>.</returns>
+        </member>
+        <member name="M:AssetsLib.TextureUtils.ModifyTexturePixels(UnityEngine.Texture2D,System.Func{UnityEngine.Color,UnityEngine.Color})">
+            <summary>Edits the pixels on a <see cref="T:UnityEngine.Texture2D"/>.</summary>
+        </member>
+        <member name="M:AssetsLib.TextureUtils.ModifyTexturePixels(UnityEngine.Texture2D,System.Func{UnityEngine.Color,System.Single,System.Single,UnityEngine.Color})">
+            <summary>Edits the pixels on a <see cref="T:UnityEngine.Texture2D"/>.</summary>
+        </member>
+        <member name="M:AssetsLib.TextureUtils.ModifyTexturePixels(UnityEngine.Cubemap,System.Func{UnityEngine.Color,UnityEngine.Color})">
+            <summary>Edits the pixels on a <see cref="T:UnityEngine.Cubemap"/>.</summary>
+        </member>
+        <member name="M:AssetsLib.TextureUtils.ModifyTexturePixels(UnityEngine.Cubemap,System.Func{UnityEngine.Color,UnityEngine.CubemapFace,System.Single,System.Single,UnityEngine.Color})">
+            <summary>Edits the pixels on a <see cref="T:UnityEngine.Cubemap"/>.</summary>
+        </member>
+        <member name="M:AssetsLib.UIUtils.CreateSelectionUI(System.String,UnityEngine.Sprite,System.Collections.Generic.List{AssetsLib.ModeOption},System.Boolean,System.Action)">
+            <summary>
+            <para>Opens a UI similar to the one used for drone program selection</para>
+            </summary>
+            <returns>The <see cref="T:UnityEngine.GameObject"/> of the opened ui</returns>
+            <param name="titleKey">the UI name key to display at the top of the UI</param>
+            <param name="titleIcon">the icon to show at the top of the UI</param>
+            <param name="options">the options to display in the UI</param>
+            <param name="closeMenuOnSelect">whether or not the UI should close upon selecting an option</param>
+            <param name="onClose">the code to be run when the UI is closed</param>
+        </member>
+        <member name="M:AssetsLib.UIUtils.Purchase(UnityEngine.GameObject,System.Boolean,System.Action,System.Int32)">
+            <summary>
+            Designed for use with a <see cref="T:PurchaseUI"/>
+            </summary>
+            <param name="ui">the <see cref="T:UnityEngine.GameObject"/> of the UI</param>
+            <param name="refresh">if <see langword="true"/>, the UI is refreshed on purchase. if <see langword="false"/> the UI is closed on purchase</param>
+            <param name="action">the code to run on successful purchase</param>
+            <param name="cost">the amount of money required to purchase the item (takes the money away from the player on purchase)</param>
+        </member>
+        <member name="M:AssetsLib.UIUtils.CreateInventoryUI(System.String,UnityEngine.Sprite,System.Collections.Generic.IEnumerable{AssetsLib.IInventoryItem},System.Boolean,System.Action)">
+            <summary>Creates a basic inventory UI</summary>
+            <param name="titleKey">the UI name key to display at the top of the UI</param>
+            <param name="titleIcon">the icon to show at the top of the UI</param>
+            <param name="options">the items to display in the ui</param>
+            <param name="closeMenuOnSelect">whether or not the UI should close upon selecting an option</param>
+            <param name="onClose">the code to be run when the UI is closed</param>
+            <returns>The <see cref="T:UnityEngine.GameObject"/> of the opened ui</returns>
+        </member>
+        <member name="M:AssetsLib.UIUtils.CreateInformationUI(UnityEngine.Sprite,System.Collections.Generic.IEnumerable{AssetsLib.InformationTab},System.Action,AssetsLib.InformationItem)">
+            <summary>Creates a basic information UI</summary>
+            <param name="TitleImage">the image to display at the top of the UI</param>
+            <param name="Tabs">the tabs to put in the UI</param>
+            <param name="onClose">the code to be run when the UI is closed</param>
+            <param name="DefaultSelection">the item to have selected when the UI opens</param>
+            <returns>The <see cref="T:UnityEngine.GameObject"/> of the opened ui</returns>
+        </member>
+        <member name="T:AssetsLib.InformationTab">
+            <summary>For use with <seealso cref="M:AssetsLib.UIUtils.CreateInformationUI(UnityEngine.Sprite,System.Collections.Generic.IEnumerable{AssetsLib.InformationTab},System.Action,AssetsLib.InformationItem)"/></summary>
+        </member>
+        <member name="T:AssetsLib.InformationItem">
+            <summary>For use with <seealso cref="M:AssetsLib.UIUtils.CreateInformationUI(UnityEngine.Sprite,System.Collections.Generic.IEnumerable{AssetsLib.InformationTab},System.Action,AssetsLib.InformationItem)"/></summary>
+        </member>
+        <member name="T:AssetsLib.ContentItem">
+            <summary>For use with <seealso cref="M:AssetsLib.UIUtils.CreateInformationUI(UnityEngine.Sprite,System.Collections.Generic.IEnumerable{AssetsLib.InformationTab},System.Action,AssetsLib.InformationItem)"/></summary>
+        </member>
+        <member name="T:AssetsLib.IdentInventoryItem">
+            <summary>A basic inventory item that use the name and icon from an <see cref="T:Identifiable.Id"/></summary>
+        </member>
+        <member name="T:AssetsLib.GenericInventoryItem">
+            <summary>A generic custom inventory item</summary>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.FindFX(System.String)">
+            <summary>Finds an effect prefab given its <paramref name="name"/></summary>
+            <returns>The effect prefab</returns>
+            <param name="name">the name of the effect prefab to search for</param>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.FindFX(System.Predicate{UnityEngine.GameObject})">
+            <summary>Finds an effect prefab given a <see cref="T:System.Predicate`1"/></summary>
+            <returns>The effect prefab</returns>
+            <param name="predicate">the predicate to search for a match for</param>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.FindObjectByName``1(System.String)">
+            <summary>Finds an object of type <typeparamref name="T"/> given its <paramref name="name"/></summary>
+            <returns>The first object found</returns>
+            <param name="name">the name of the object to search for</param>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.FindObjectsByNames``1(System.String[])">
+            <summary>Finds multi objects of type <typeparamref name="T"/> given their <paramref name="names"/></summary>
+            <returns>An array of the first object found with each name</returns>
+            <param name="names">the names of the objects to search for</param>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.FindObjectsByNames``1(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>Finds multi objects of type <typeparamref name="T"/> given their <paramref name="names"/></summary>
+            <returns>An array of the first object found with each name</returns>
+            <param name="names">the names of the objects to search for</param>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.FindObject``1(System.Predicate{``0})">
+            <summary>Finds an object of type <typeparamref name="T"/> given a <see cref="T:System.Predicate`1"/></summary>
+            <returns>The first object found</returns>
+            <param name="predicate">the predicate to search for a match for</param>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.FindObjects``1(System.Predicate{``0}[])">
+            <summary>Finds multi objects of type <typeparamref name="T"/> given a set of <see cref="T:System.Predicate`1"/>s</summary>
+            <returns>An array of the first object matching each <see cref="T:System.Predicate`1"/></returns>
+            <param name="predicates">the predicate to search for a match for</param>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.FindObjects``1(System.Collections.Generic.IEnumerable{System.Predicate{``0}})">
+            <summary>Finds multi objects of type <typeparamref name="T"/> given a set of <see cref="T:System.Predicate`1"/>s</summary>
+            <returns>An array of the first object matching each <see cref="T:System.Predicate`1"/></returns>
+            <param name="predicates">the predicate to search for a match for</param>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.CreateElement(System.String,SlimeAppearanceObject[])">
+            <summary>Creates a <see cref="T:SlimeAppearanceElement"/></summary>
+            <returns>The created element</returns>
+            <param name="Name">The name to give the <see cref="T:SlimeAppearanceElement"/> (this is not important)</param>
+            <param name="appearanceObjects">The <see cref="T:SlimeAppearanceObject"/> prefabs to store in the <see cref="T:SlimeAppearanceElement"/></param>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.GetAppearance(Identifiable.Id,SlimeAppearance.AppearanceSaveSet)">
+            <returns>The <see cref="T:SlimeAppearance"/> of a slime given an <see cref="T:SlimeAppearance.AppearanceSaveSet"/></returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.GetPrefab(Identifiable.Id)">
+            <returns>The prefab of the <see cref="T:Identifiable.Id"/> from the <see cref="T:LookupDirector"/></returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.GetOrAddComponent``1(UnityEngine.GameObject)">
+            <summary>Attepts to get a <see cref="T:UnityEngine.Component"/> of type <typeparamref name="T"/>. If the <see cref="T:UnityEngine.Component"/> was not present on the <see cref="T:UnityEngine.GameObject"/> it is added.</summary>
+            <returns>An instance of <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.GetOrAddComponent``1(UnityEngine.Component)">
+            <summary>Attepts to get a <see cref="T:UnityEngine.Component"/> of type <typeparamref name="T"/>. If the <see cref="T:UnityEngine.Component"/> was not present on the <see cref="T:UnityEngine.GameObject"/> it is added.</summary>
+            <returns>An instance of <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.CreatePrefab``1(``0)">
+            <returns>A prefab duplicate of the object</returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.CreateInactive``1(``0)">
+            <returns>An inactive duplicate of the object</returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.CreateEmptyPrefab(System.String)">
+            <returns>A new <see cref="T:UnityEngine.GameObject"/> that is a prefab</returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.CreateInactive(UnityEngine.GameObject)">
+            <returns>Instantiates an inactive duplicate of the object</returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.CreateScriptableObject``1(System.Action{``0})">
+            <summary>Useful for one-liner <see cref="T:UnityEngine.ScriptableObject"/> creation.</summary>
+            <typeparam name="T">the class to create an instance of</typeparam>
+            <param name="construct">after creation, the created object will be given to this function. Use this to set variables on the object</param>
+            <returns>The created object</returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.GetAllChildren(UnityEngine.Transform,System.Boolean)">
+            <returns>Returns all the children of <paramref name="parent"/>. If <paramref name="includeInactive"/> is false, inactive children are excluded</returns>
+        </member>
+        <member name="T:AssetsLib.GameObjectUtils.LightingMode">
+            <summary>
+            Lighting options for the object rendering methods:<br/>
+            <see cref="M:AssetsLib.GameObjectUtils.RenderImage(UnityEngine.GameObject,AssetsLib.GameObjectUtils.RenderConfig,System.Exception@,System.Boolean,AssetsLib.GameObjectUtils.LightingMode,System.Int32)"/><br/>
+            <see cref="M:AssetsLib.GameObjectUtils.RenderImages(UnityEngine.GameObject,AssetsLib.GameObjectUtils.RenderConfig[],System.Exception[]@,System.Boolean,AssetsLib.GameObjectUtils.LightingMode,System.Int32)"/>
+            </summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.LightingMode.DoNotChange">
+            <summary>Make no changes to the light sources for renders</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.LightingMode.IgnoreExternalLights">
+            <summary>Only include light sources part of the object itself for renders</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.LightingMode.IgnoreAllLights">
+            <summary>Don't include any light sources in the renders</summary>
+        </member>
+        <member name="T:AssetsLib.GameObjectUtils.RenderConfig">
+            <summary>
+            Image generation settings for the object rendering methods:<br/>
+            <see cref="M:AssetsLib.GameObjectUtils.RenderImage(UnityEngine.GameObject,AssetsLib.GameObjectUtils.RenderConfig,System.Exception@,System.Boolean,AssetsLib.GameObjectUtils.LightingMode,System.Int32)"/><br/>
+            <see cref="M:AssetsLib.GameObjectUtils.RenderImages(UnityEngine.GameObject,AssetsLib.GameObjectUtils.RenderConfig[],System.Exception[]@,System.Boolean,AssetsLib.GameObjectUtils.LightingMode,System.Int32)"/>
+            </summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.BeforeRender">
+            <summary>Action to be run before starting this render</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.AfterRender">
+            <summary>Action to be run after this render. Use for undoing changes made in the before action</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.ambientLight">
+            <summary>Ambient lighting to use for this render. Leave <see langword="null"/> to use current</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.backgroundColor">
+            <summary>Background color to use for the render. Transparent colors can be used</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.cameraAngle">
+            <summary>The angle the camera should point during the render. Object will be centered in the image regardless</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.imageMargins">
+            <summary>The margins of transparent pixels to ensure are around the rendered image. Set to <see langword="null"/> to skip margin checks</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.imgWidth">
+            <summary>Width in pixels of the image to be created</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.imgHeight">
+            <summary>Height in pixels of the image to be created</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.mipmapCount">
+            <summary>Mipmap count of the image to be created</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.linearImg">
+            <summary>Whether to use the linear color space or the sRGB color space for the image to be created</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.respectParticleRendererBounds">
+            <summary>Not recommended unless you're using an object that is only particles or the particles you want to be included are not already included</summary>
+        </member>
+        <member name="F:AssetsLib.GameObjectUtils.RenderConfig.complexTransparencyDetection">
+            <summary>Whether to use a more detailed transparency detection. This will do more processing but will help if you're using a transparent background and are having issues with gamma artifacting in the render. This will have no effect if you're not using margins</summary>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.RenderImage(UnityEngine.GameObject,AssetsLib.GameObjectUtils.RenderConfig,System.Exception@,System.Boolean,AssetsLib.GameObjectUtils.LightingMode,System.Int32,System.Single)">
+            <summary>
+            Renders an image of the object using the provided configuration.
+            </summary>
+            <param name="copyObjectForRender">if <see langword="true"/>, it will instantiate the object and render the instantiated copy, otherwise will render the object itself. This will almost always need to be enabled for rendering a prefab</param>
+            <param name="exception">Will be set to whatever <see cref="T:System.Exception"/> occured while trying to render, if one occured. Otherwise will be <see langword="null"/></param>
+            <param name="go">The object to render an image of</param>
+            <param name="lightingMode">Which light sources should be included in the render</param>
+            <param name="renderConfig">The configuration to use for rendering the image</param>
+            <param name="renderLayer">The layer to use for the render. It is recommended to leave as 30 to avoid unwanted object being included in the image</param>
+            <param name="cameraBufferDistance">The amount of unrendered distance between the camera and the object. You shouldn't need to increase this unless you're getting strange object artifacting in the render</param>
+            <returns><see langword="null"/> and sets the <paramref name="exception"/> value if an <see cref="T:System.Exception"/> occured, otherwise the generated image</returns>
+        </member>
+        <member name="M:AssetsLib.GameObjectUtils.RenderImages(UnityEngine.GameObject,AssetsLib.GameObjectUtils.RenderConfig[],System.Exception[]@,System.Boolean,AssetsLib.GameObjectUtils.LightingMode,System.Int32,System.Single)">
+            <summary>
+            Renders multiple images of the object using the provided configurations.
+            </summary>
+            <param name="copyObjectForRender">if <see langword="true"/>, it will instantiate the object and render the instantiated copy, otherwise will render the object itself. This will almost always need to be enabled for rendering a prefab</param>
+            <param name="exceptions">Will be set to an array of the same size as <paramref name="renderConfigs"/>. For any renders that fail, the error that occured will be stored at the respective index</param>
+            <param name="go">The object to render an image of</param>
+            <param name="lightingMode">Which light sources should be included in the render</param>
+            <param name="renderConfigs">The configurations to use for rendering the images</param>
+            <param name="renderLayer">The layer to use for the renders. It is recommended to leave as 30 to avoid unwanted object being included in the images</param>
+            <param name="cameraBufferDistance">The amount of unrendered distance between the camera and the object. You shouldn't need to increase this unless you're getting strange object artifacting in the renders</param>
+            <returns>An array of the same size as <paramref name="renderConfigs"/> containing the images generated, respective of the indecies. If an error occured while generating a particular image, a <see langword="null"/> will be stored at that index and the exception will be stored in <paramref name="exceptions"/> at said index</returns>
+        </member>
+        <member name="M:AssetsLib.TextUtils.LoadText(System.String,System.Text.Encoding)">
+            <summary>
+            <para>Loads a text file from the embedded resources.</para>
+            <para>Throws a <see cref="T:MissingResourceException"/> if no file is found under the specified name.</para>
+            </summary>
+            <param name="filename">the name of the file to load (including extention)</param>
+            <param name="encoding">The character encoding to read the file with</param>
+            <returns>The contents of the file</returns>
+            <exception cref="T:MissingResourceException"/>
+        </member>
+        <member name="M:AssetsLib.TextUtils.LoadJson(System.String)">
+            <summary>
+            <para>Loads a json file from the embedded resources.</para>
+            <para>Throws a <see cref="T:MissingResourceException"/> if no file is found under the specified name.</para>
+            </summary>
+            <param name="filename">the name of the file to load (including extention)</param>
+            <returns>The <see cref="T:System.Json.JsonValue"/> generated from the file's contents. In most cases this will be a <see cref="T:System.Json.JsonObject"/></returns>
+            <exception cref="T:MissingResourceException"/>
+        </member>
+        <member name="M:AssetsLib.TextUtils.LoadRawJson(System.String)">
+            <summary>Creates a <see cref="T:System.Json.JsonValue"/> from a raw json <see cref="T:System.String"/></summary>
+            <param name="rawJson">the <see cref="T:System.String"/> to create the <see cref="T:System.Json.JsonValue"/> from</param>
+            <returns>The <see cref="T:System.Json.JsonValue"/> generated from <paramref name="rawJson"/>. In most cases this will be a <see cref="T:System.Json.JsonObject"/></returns>
+        </member>
+        <member name="M:AssetsLib.DroneNetworkUtils.CreateNodesFromJson(CellDirector,System.Json.JsonObject,System.Boolean)">
+            <summary>
+            <para>Creates a set of <see cref="T:PathingNetworkNode"/>s as depicted by the provided <see cref="T:System.Json.JsonObject"/> and adds them<br/>
+            to the provided cell. During this process, if the provided cell does not already contain a<br/>
+            <see cref="T:DroneNetwork"/> component, one will be added.</para>
+            <para>If the cell already has a <see cref="T:DroneNetwork"/>, existing nodes will not be removed</para>
+            <para>Throws a <see cref="T:System.FormatException"/> if one of the json elements is the wrong type.<br/>
+            Throws a <see cref="T:System.MissingMemberException"/> if one of the json elements is missing a required property.</para>
+            </summary>
+            <param name="cell">The <see cref="T:CellDirector"/> of the cell to add the nodes to</param>
+            <param name="json">The JSON to generate the nodes from</param>
+            <param name="automatic2WayConnections">If <see langword="true"/>, all the node connections created will have a second reverse connection.<br/><see cref="T:Drone"/>s may not path as expected if connections are only one way</param>
+            <returns>The longest created connection length. If the distance between nodes is too great, drones may<br/>be unable to use the connection</returns>
+            <exception cref="T:System.FormatException"/>
+            <exception cref="T:System.MissingMemberException"/>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.FindIndexLoop``1(System.Collections.Generic.List{``0},System.Int32,System.Predicate{``0})">
+            <summary>Searches for an item matching the provided <see cref="T:System.Predicate`1"/>. Starts searching at <paramref name="start"/>.<br/>
+            If no matching value is found after <paramref name="start"/> then it will search from the first item up to <paramref name="start"/></summary>
+            <returns>The index of the found item. If no item was found returns -1</returns>
+            <param name="start">the index to start the search at</param>
+            <param name="predicate">the condition to search for</param>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Get``1(System.Collections.Generic.List{``0},System.Int32)">
+            <summary>
+            <para>Gets the item from the list at index <paramref name="index"/>.</para>
+            <para>If index is outside the bounds of the list then it will be wrapped to the list's<br/>
+            length. For example, -1 will be the last item in the list</para>
+            </summary>
+            <returns>The item at the specified index</returns>
+            <param name="index">the index of the item to fetch</param>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Mod(System.Int32,System.Int32)">
+            <summary>
+            <para>Gets the result of a non-negative modular division</para>
+            </summary>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.AddOrGetIndex``1(System.Collections.Generic.List{``0},``0)">
+            <summary>
+            <para>Attempts to find an item within a list. If the item is found its index is returned, otherwise<br/>
+            the item is added to the list and the new item's index is returned</para>
+            </summary>
+            <returns>The index of the specified item</returns>
+            <param name="value">the value to get the index of</param>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.FindChildrenRecursively(UnityEngine.Transform,System.String)">
+            <summary>Recursively searchs all the children of the <see cref="T:UnityEngine.Transform"/> to find all that have a certain name</summary>
+            <returns>A list of the found children's <see cref="T:UnityEngine.Transform"/>s</returns>
+            <param name="ChildName">the name of the children to search for</param>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.AddItem(SlimeEat.FoodGroup,Identifiable.Id)">
+            <summary>Adds an id to the <see cref="T:SlimeEat.FoodGroup"/></summary>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector3,UnityEngine.Quaternion)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector3"/> by the provided <see cref="T:UnityEngine.Quaternion"/></summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector3"/> by the provided Euler</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector3,System.Single,System.Single,System.Single)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector3"/> by the provided Euler</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector3,UnityEngine.Quaternion,UnityEngine.Vector3)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector3"/> by the provided <see cref="T:UnityEngine.Quaternion"/> around the specified point</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector3"/> by the provided Euler around the specified point</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector3,System.Single,System.Single,System.Single,UnityEngine.Vector3)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector3"/> by the provided Euler around the specified point</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector3,UnityEngine.Quaternion,System.Single,System.Single,System.Single)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector3"/> by the provided <see cref="T:UnityEngine.Quaternion"/> around the specified point</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector3"/> by the provided Euler around the specified point</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector3,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector3"/> by the provided Euler around the specified point</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Offset(UnityEngine.Vector3,System.Single,System.Single,System.Single)">
+            <summary>Offsets a <see cref="T:UnityEngine.Vector3"/> by the provided <see cref="T:UnityEngine.Vector3"/></summary>
+            <returns>The offset <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Offset(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>Offsets a <see cref="T:UnityEngine.Vector3"/> by the provided <see cref="T:UnityEngine.Vector3"/></summary>
+            <returns>The offset <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Multiply(UnityEngine.Vector3,System.Single,System.Single,System.Single)">
+            <summary>Multiplies a <see cref="T:UnityEngine.Vector3"/> by the provided <see cref="T:UnityEngine.Vector3"/></summary>
+            <returns>The scaled <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Multiply(UnityEngine.Vector3,System.Single)">
+            <summary>Multiplies a <see cref="T:UnityEngine.Vector3"/> by the provided <see cref="T:UnityEngine.Vector3"/></summary>
+            <returns>The scaled <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Multiply(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>Multiplies a <see cref="T:UnityEngine.Vector3"/> by the provided <see cref="T:UnityEngine.Vector3"/></summary>
+            <returns>The scaled <see cref="T:UnityEngine.Vector3"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Multiply(UnityEngine.Vector2,System.Single,System.Single)">
+            <summary>Multiplies a <see cref="T:UnityEngine.Vector2"/> by the provided <see cref="T:UnityEngine.Vector2"/></summary>
+            <returns>The scaled <see cref="T:UnityEngine.Vector2"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Multiply(UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>Multiplies a <see cref="T:UnityEngine.Vector2"/> by the provided <see cref="T:UnityEngine.Vector2"/></summary>
+            <returns>The scaled <see cref="T:UnityEngine.Vector2"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Offset(UnityEngine.Vector2,System.Single,System.Single)">
+            <summary>Offsets a <see cref="T:UnityEngine.Vector2"/> by the provided <see cref="T:UnityEngine.Vector2"/></summary>
+            <returns>The offset <see cref="T:UnityEngine.Vector2"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Offset(UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>Offsets a <see cref="T:UnityEngine.Vector2"/> by the provided <see cref="T:UnityEngine.Vector2"/></summary>
+            <returns>The offset <see cref="T:UnityEngine.Vector2"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector2,System.Single)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector2"/> by the provided angle in degrees</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector2"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector2,System.Single,UnityEngine.Vector2)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector2"/> by the provided angle in degrees around the provided point</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector2"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Rotate(UnityEngine.Vector2,System.Single,System.Single,System.Single)">
+            <summary>Rotates a <see cref="T:UnityEngine.Vector2"/> by the provided angle in degrees around the provided point</summary>
+            <returns>The rotated <see cref="T:UnityEngine.Vector2"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.ToArray(UnityEngine.Vector3)">
+            <returns>The <see cref="T:UnityEngine.Vector3"/>'s x, y and z values in an array</returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Min(UnityEngine.Vector3)">
+            <returns>The <see cref="T:UnityEngine.Vector3"/>'s smallest value</returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Max(UnityEngine.Vector3)">
+            <returns>The <see cref="T:UnityEngine.Vector3"/>'s biggest value</returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Abs(UnityEngine.Vector3)">
+            <returns>The <see cref="T:UnityEngine.Vector3"/> with all axes positive.</returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Clone(UnityEngine.Material)">
+            <returns>A duplicate of the <see cref="T:UnityEngine.Material"/>.</returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.CopyFields``1(``0,``0)">
+            <summary>Copies all the field's values from <paramref name="b"/>.</summary>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Overlay(UnityEngine.Color,UnityEngine.Color)">
+            <summary>Overlays the <see cref="T:UnityEngine.Color"/> with <paramref name="color"/> with respect to alpha values</summary>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Shift(UnityEngine.Color,System.Single,System.Single,System.Single)">
+            <summary>Returns the <see cref="T:UnityEngine.Color"/> grayscaled then tinted</summary>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.RandomObject``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Single})">
+            <summary>Selects a random object from a collection given the weights fetched from the <paramref name="getWeight"/> function</summary>
+            <returns>A random object</returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.AddUnique``1(System.Collections.Generic.List{``0},``0)">
+            <summary>Adds an item to a list if the list does not already contain the item</summary>
+            <param name="value">item to try and add to the list</param>
+            <returns><see langword="true"/> if the item was added, <see langword="false"/> if the list already contains the item</returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.AddRangeUnique``1(System.Collections.Generic.List{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>Performs an <see cref="M:AssetsLib.ExtentionMethods.AddUnique``1(System.Collections.Generic.List{``0},``0)"/> for each item in the set <paramref name="values"/></summary>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.GetValues``2(System.Collections.Generic.Dictionary{``0,``1},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            <para>Gets the values associated with the specified <paramref name="keys"/>.</para>
+            <para>If a specific key is not found, <see langword="default"/> will be fetched as it's value</para>
+            </summary>
+            <param name="keys">keys to fetch</param>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.AddRange``2(System.Collections.Generic.Dictionary{``0,``1},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1})">
+            <summary>
+            <para>Adds the set of keys and values to the dictionary.</para>
+            <para>If the keys and values collections are different sizes, only the less amount will be used. For example, if keys is 5 long and values is 10 long, only 5 items will be added to the dictionary</para>
+            </summary>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.TryFind``2(System.Collections.Generic.IEnumerable{``0},System.Predicate{``0},System.Func{``0,``1},``1@)">
+            <summary>Attempts to find an item in the collection. Once the item is found, it is converted to another object/value</summary>
+            <param name="value">The first item that matches the <paramref name="predicate"/> and has been parsed through the <paramref name="getter"/>. If no match was found, it will be <see langword="default"/></param>
+            <returns><see langword="true"/> if an item matching the <paramref name="predicate"/> was found, otherwise, <see langword="false"/></returns>
+        </member>
+        <member name="M:AssetsLib.ExtentionMethods.Is``1(System.Type)">
+            <summary>Checks if type <paramref name="t"/> is the same as or inherits from type <typeparamref name="T"/></summary>
+        </member>
+        <member name="T:AssetsLib.ColorGroup">
+            <summary>A set of <see cref="T:UnityEngine.Color"/>s that behaves similar to a spectrum or gradient</summary>
+        </member>
+        <member name="M:AssetsLib.ColorGroup.AddColor(UnityEngine.Color,System.Single)">
+            <summary>Adds a <see cref="T:UnityEngine.Color"/> to the <see cref="T:AssetsLib.ColorGroup"/> at the specified position</summary>
+        </member>
+        <member name="M:AssetsLib.ColorGroup.GetColor(System.Single)">
+            <summary>
+            <para>Gets a <see cref="T:UnityEngine.Color"/> at the specified position.</para>
+            <para>In the case of a <paramref name="position"/> between added colors it will return a <see cref="T:UnityEngine.Color"/> partway between them</para>
+            </summary>
+        </member>
+        <member name="T:AssetsLib.TransformAnimator`1">
+            <summary>A basic animation handler class</summary>
+        </member>
+        <member name="T:AssetsLib.ScaleAnimator">
+            <summary>Used for animating the <see cref="P:UnityEngine.Transform.localScale"/> property</summary>
+        </member>
+        <member name="T:AssetsLib.OffsetAnimator">
+            <summary>Used for animating the <see cref="P:UnityEngine.RectTransform.offsetMin"/> and <see cref="P:UnityEngine.RectTransform.offsetMax"/> properties</summary>
+        </member>
+        <member name="T:AssetsLib.RotationAnimator">
+            <summary>Used for animating the <see cref="P:UnityEngine.Transform.localRotation"/> in the form of Z axis rotations</summary>
+        </member>
+        <member name="T:AssetsLib.MeshData">
+            <summary>A basic mesh data handling class. Can be used for easy <see cref="T:UnityEngine.Mesh"/> combining and editing</summary>
+        </member>
+        <member name="P:AssetsLib.MeshData.Empty">
+            <returns>An empty set of <see cref="T:AssetsLib.MeshData"/></returns>
+        </member>
+        <member name="M:AssetsLib.MeshData.#ctor(System.Collections.Generic.IEnumerable{UnityEngine.Vector3},System.Collections.Generic.IEnumerable{UnityEngine.Vector2},System.Collections.Generic.IEnumerable{System.Int32})">
+            <param name="vertices">Must be the same length as <paramref name="uvs"/></param>
+            <param name="uvs">Must be the same length as <paramref name="vertices"/></param>
+            <param name="triangles">All values must be indecies within the range of <paramref name="vertices"/> and the length must be a multiple of 3</param>
+        </member>
+        <member name="M:AssetsLib.MeshData.Clone">
+            <summary>Creates a duplicate of the <see cref="T:AssetsLib.MeshData"/></summary>
+        </member>
+        <member name="M:AssetsLib.MeshData.Add(AssetsLib.MeshData,AssetsLib.MeshModifier)">
+            <summary>Merges the data from the provided <see cref="T:AssetsLib.MeshData"/> onto the current instance's data, effectively combining the meshes</summary>
+        </member>
+        <member name="M:AssetsLib.MeshData.op_Addition(AssetsLib.MeshData,AssetsLib.MeshData)">
+            <returns>A merged instance of the 2 data sets, effectively combining the meshes</returns>
+        </member>
+        <member name="M:AssetsLib.MeshData.Modify(AssetsLib.MeshModifier)">
+            <summary>Modifies the data set based on the rules provided by the <paramref name="modifier"/></summary>
+        </member>
+        <member name="M:AssetsLib.MeshData.Modify(System.Func{UnityEngine.Vector3,UnityEngine.Vector2,System.ValueTuple{UnityEngine.Vector3,UnityEngine.Vector2}})">
+            <summary>Modifies the data set based on the rule provided by the <paramref name="modifier"/></summary>
+        </member>
+        <member name="M:AssetsLib.MeshData.op_Multiply(AssetsLib.MeshData,AssetsLib.MeshModifier)">
+            <returns>A modified instance of the data set based on the rules provided by the <see cref="T:AssetsLib.MeshModifier"/></returns>
+        </member>
+        <member name="M:AssetsLib.MeshData.op_Multiply(AssetsLib.MeshModifier,AssetsLib.MeshData)">
+            <returns>A modified instance of the data set based on the rules provided by the <see cref="T:AssetsLib.MeshModifier"/></returns>
+        </member>
+        <member name="M:AssetsLib.MeshData.op_Multiply(AssetsLib.MeshData,System.Func{UnityEngine.Vector3,UnityEngine.Vector2,System.ValueTuple{UnityEngine.Vector3,UnityEngine.Vector2}})">
+            <returns>A modified instance of the data set based on the rule provided</returns>
+        </member>
+        <member name="M:AssetsLib.MeshData.op_Multiply(System.Func{UnityEngine.Vector3,UnityEngine.Vector2,System.ValueTuple{UnityEngine.Vector3,UnityEngine.Vector2}},AssetsLib.MeshData)">
+            <returns>A modified instance of the data set based on the rule provided</returns>
+        </member>
+        <member name="M:AssetsLib.MeshData.ToMesh">
+            <returns>A <see cref="T:UnityEngine.Mesh"/> generated from the data set</returns>
+        </member>
+        <member name="M:AssetsLib.MeshData.MergeAsSubMeshes(AssetsLib.MeshData[])">
+            <summary>
+            Merges the set of <see cref="T:AssetsLib.MeshData"/> into a single <see cref="T:UnityEngine.Mesh"/> with the data from each <see cref="T:AssetsLib.MeshData"/> being registered as a submesh
+            </summary>
+            <returns>The generated mesh</returns>
+        </member>
+        <member name="T:AssetsLib.MeshModifier">
+            <summary>For use with a <see cref="T:AssetsLib.MeshData"/> instance to modify the vertices and or the uv map by defined rules</summary>
+        </member>
+        <member name="M:AssetsLib.MeshModifier.op_Addition(AssetsLib.MeshModifier,AssetsLib.MeshModifier)">
+            <summary>
+            <para>Combines 2 <see cref="T:AssetsLib.MeshModifier"/>s</para>
+            <para>Note: when used, <paramref name="a"/> is applied before <paramref name="b"/></para>
+            </summary>
+        </member>
+    </members>
+</doc>
