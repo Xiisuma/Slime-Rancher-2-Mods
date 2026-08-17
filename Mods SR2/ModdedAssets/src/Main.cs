@@ -26,21 +26,21 @@ public class Main : MelonMod
     /// <summary>Reference id of a modded type, and the asset file that should illustrate it.</summary>
     private static readonly Dictionary<string, string> Icons = new()
     {
-        // BubbleSlimes  real PNG files in the original mod.
+        // BubbleSlimes: PNG files in the original mod.
         ["BubbleSlimes_SlimeBubble"] = "slimeBubble.rgba",
         ["BubbleSlimes_PlortBubble"] = "plortBubble.rgba",
 
-        // LuckyPlorts and GemSlimes  Slime Rancher 1 asset bundles, which a newer Unity may reject.
-        ["LuckyPlorts_PlortLucky"] = "plortLucky.bundle",
-        ["GemSlimes_SlimeAmethyst"] = "slimeAmethyst.bundle",
-        ["GemSlimes_SlimeDiamond"] = "slimeDiamond.bundle",
-        ["GemSlimes_SlimeEmerald"] = "slimeEmerald.bundle",
-        ["GemSlimes_SlimeGarnet"] = "slimeGarnet.bundle",
-        ["GemSlimes_SlimeSapphire"] = "slimeSapphire.bundle",
-        ["GemSlimes_PlortAmethyst"] = "plortAmethyst.bundle",
-        ["GemSlimes_PlortDiamond"] = "plortDiamond.bundle",
-        ["GemSlimes_PlortEmerald"] = "plortEmerald.bundle",
-        ["GemSlimes_PlortSapphire"] = "plortSapphire.bundle"
+        // LuckyPlorts and GemSlimes: unpacked from the Slime Rancher 1 asset bundles they shipped in.
+        ["LuckyPlorts_PlortLucky"] = "plortLucky.rgba",
+        ["GemSlimes_SlimeAmethyst"] = "slimeAmethyst.rgba",
+        ["GemSlimes_SlimeDiamond"] = "slimeDiamond.rgba",
+        ["GemSlimes_SlimeEmerald"] = "slimeEmerald.rgba",
+        ["GemSlimes_SlimeGarnet"] = "slimeGarnet.rgba",
+        ["GemSlimes_SlimeSapphire"] = "slimeSapphire.rgba",
+        ["GemSlimes_PlortAmethyst"] = "plortAmethyst.rgba",
+        ["GemSlimes_PlortDiamond"] = "plortDiamond.rgba",
+        ["GemSlimes_PlortEmerald"] = "plortEmerald.rgba",
+        ["GemSlimes_PlortSapphire"] = "plortSapphire.rgba"
     };
 
     public static Main Instance { get; private set; }

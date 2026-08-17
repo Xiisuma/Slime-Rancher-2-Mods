@@ -17,16 +17,29 @@ leave it out and every mod still works with vanilla icons.
 
 ## What it covers
 
-| Mod | Assets | Format |
-|---|---|---|
-| BubbleSlimes | slime + plort icons | PNG |
-| LuckyPlorts | plort icon | SR1 asset bundle |
-| GemSlimes | 5 slime + 4 plort icons | SR1 asset bundle |
+| Mod | Assets |
+|---|---|
+| BubbleSlimes | slime + plort icons |
+| LuckyPlorts | plort icon |
+| GemSlimes | 5 slime + 4 plort icons |
 
-PNG files always load. The asset bundles were built with Slime Rancher 1's Unity version, and a newer
-Unity may refuse to open them — when that happens the mod logs which file was rejected and leaves the
-vanilla icon in place, rather than failing silently. Check `MelonLoader/Latest.log` to see which ones
-went through.
+## How the artwork gets in
+
+The SR1 mods shipped their icons two ways: BubbleSlimes as plain PNG files, GemSlimes and LuckyPlorts
+inside Unity asset bundles built for Slime Rancher 1 — which Slime Rancher 2's Unity refuses to open
+at runtime. Those bundles were therefore unpacked **offline** (with UnityPy) and their sprites stored
+next to the PNGs.
+
+Everything is embedded as raw RGBA32 (`.rgba`: width, height, then the rows bottom-up), because
+`ImageConversion.LoadImage` takes an `Il2CppSystem.ReadOnlySpan` that Il2CppInterop cannot marshal —
+calling it throws at runtime. The `.png` files are kept alongside as the readable originals; only the
+`.rgba` ones are compiled into the DLL, downscaled to 256 pixels. At full size the raw pixels made
+the DLL 32 MB, and the UI never shows an icon larger than a slot.
+
+If an asset is ever missing or unreadable, the mod photographs the object instead: an isolated camera
+renders the prefab's meshes to a sprite, so a modded type never silently wears the icon of the vanilla
+one it was cloned from. `MelonLoader/Latest.log` reports the split, for example
+`Applied 12 icons, rendered 0`.
 
 The assets are extracted from the original SR1 mod DLLs, which are kept in this repo under
 [`Mods SR1/`](../../Mods%20SR1). Credit stays with their authors.
@@ -39,8 +52,20 @@ Fill the shared [`Dependencies/`](../../Dependencies/README.md) folder, then:
 dotnet build -c Release
 ```
 
-Files in `assets/` are embedded into the DLL at build time; drop a new one in and add a line to the
-`Icons` table in `src/Main.cs` to cover another mod.
+`assets/*.rgba` and `assets/*.bundle` are embedded into the DLL at build time. To cover another mod,
+add its icon as `.rgba` and a line to the `Icons` table in `src/Main.cs`. To convert a PNG:
+
+```python
+import struct
+from PIL import Image
+
+img = Image.open("icon.png").convert("RGBA")
+img.thumbnail((256, 256), Image.LANCZOS)
+flipped = img.transpose(Image.FLIP_TOP_BOTTOM)   # Unity uploads rows bottom-up
+with open("icon.rgba", "wb") as f:
+    f.write(struct.pack("<ii", *flipped.size))
+    f.write(flipped.tobytes())
+```
 
 ## Not covered
 
