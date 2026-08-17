@@ -40,6 +40,14 @@ public static class IdentifiableRegistry
         type.initializedHashId = false;
         type.stableHashedId = 0;
 
+        // The big picture the Slimepedia and the pickup popups show is "full art", an Addressables
+        // reference to a painting of the vanilla type. A clone still points at the original's, so a
+        // modded slime would be illustrated by the one it was cut from. There is no way to publish a
+        // runtime sprite as an addressable asset, so the reference is dropped and the game falls back
+        // to the type's own icon.
+        type._fullArt = null;
+        type._requiresFullArt = false;
+
         if (translationTable != null && translationKey != null)
             type.localizedName = Translations.Localized(translationTable, translationKey);
 

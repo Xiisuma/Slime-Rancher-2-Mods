@@ -64,10 +64,6 @@ public class Main : MelonMod
         Recolor.Apply(prefab, PaleTop, PaleMiddle, PaleBottom);
         IdentifiableRegistry.SetPrefab(LuckyPlort, prefab);
 
-        Pedia.Register(LuckyPlort, pinkPlort,
-            "A lucky slime that has eaten a stony hen leaves this behind: pale, smooth, and worth " +
-            "a good deal more than the hen was. The market takes them gladly.");
-
         Log.Msg("Lucky Plort created.");
     }
 

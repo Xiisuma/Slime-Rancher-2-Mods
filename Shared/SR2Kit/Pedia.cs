@@ -22,9 +22,6 @@ public static class Pedia
     /// <summary>Table used for the entry text when the template's own table cannot be read.</summary>
     private const string FallbackTable = "Actor";
 
-    /// <summary>Category holding everything a rancher can carry, and the home of modded plorts.</summary>
-    private const string ResourceCategory = "Resources";
-
     /// <summary>One modded entry, and the categories the game's own asset lists it in.</summary>
     private sealed class Written
     {
@@ -47,13 +44,12 @@ public static class Pedia
         if (type == null || template == null) return null;
         if (Registered.TryGetValue(type.referenceId, out PediaEntry already)) return already;
 
-        // Plorts have no page of their own in Slime Rancher 2 — one shared entry covers them all —
-        // so a modded plort has nothing to be modelled on. It gets a resource page instead, which is
-        // where a rancher looks for a thing they can hold.
-        IdentifiablePediaEntry source = Find(template) ?? FirstIn(ResourceCategory);
+        // No entry, no clone. Slime Rancher 2 gives no page to a plort — one shared entry covers
+        // them all — and a modded plort should not be the exception that gets one.
+        IdentifiablePediaEntry source = Find(template);
         if (source == null)
         {
-            MelonLogger.Warning($"[SR2Kit] Nothing to model the Slimepedia entry of {type.referenceId} on.");
+            MelonLogger.Warning($"[SR2Kit] {template.name} has no Slimepedia entry to model {type.referenceId} on.");
             return null;
         }
 
@@ -62,9 +58,9 @@ public static class Pedia
         entry.name = $"Pedia{type.referenceId}";
         entry._identifiableType = type;
 
-        // Unlocked from the start: the game unlocks an entry when the player first meets the thing,
-        // which for a modded type would mean the Slimepedia stays empty until then.
-        entry._isUnlockedInitially = true;
+        // Locked, like every other entry: a rancher discovers a modded slime by meeting it, not by
+        // installing the mod. Until then it sits in its category as an unknown.
+        entry._isUnlockedInitially = false;
 
         if (type.localizedName != null) entry._title = type.localizedName;
 
@@ -100,10 +96,10 @@ public static class Pedia
     /// Hands the entries to the pedia of a running save.
     ///
     /// Writing them into the category assets is not enough: the director builds its own runtime
-    /// categories from those assets, keeps a map from identifiable to entry for the unlock that
-    /// happens when a rancher first meets something, and holds the set of entries already unlocked —
-    /// none of which knows about an entry that appeared after the game was built. All three are
-    /// filled in here, which is also why the entries show up in a save started before the mod.
+    /// categories from those assets, and keeps a map from identifiable to entry for the unlock that
+    /// fires when a rancher first meets something. Neither knows about an entry that appeared after
+    /// the game was built, so both are filled in here — which is also why the entries turn up in a
+    /// save started before the mod was installed.
     /// </summary>
     private static void Attach(PediaDirector director)
     {
@@ -126,7 +122,6 @@ public static class Pedia
             }
 
             Link(director, written);
-            director.Unlock(written.Entry, showPopup: false);
         }
 
         MelonLogger.Msg($"[SR2Kit] {Entries.Count} Slimepedia entries handed to the running save ({shown} listed).");
@@ -155,22 +150,6 @@ public static class Pedia
         foreach (IdentifiablePediaEntry entry in Resources.FindObjectsOfTypeAll<IdentifiablePediaEntry>())
         {
             if (entry != null && entry._identifiableType == type) return entry;
-        }
-        return null;
-    }
-
-    /// <summary>First entry of a category that documents an identifiable, to be used as a model.</summary>
-    private static IdentifiablePediaEntry FirstIn(string categoryName)
-    {
-        foreach (PediaCategory category in Resources.FindObjectsOfTypeAll<PediaCategory>())
-        {
-            if (category.name != categoryName || category._items == null) continue;
-
-            foreach (PediaEntry entry in category._items)
-            {
-                IdentifiablePediaEntry identifiable = entry?.TryCast<IdentifiablePediaEntry>();
-                if (identifiable != null && identifiable._identifiableType != null) return identifiable;
-            }
         }
         return null;
     }

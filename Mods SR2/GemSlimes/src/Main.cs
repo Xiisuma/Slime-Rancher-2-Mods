@@ -91,7 +91,6 @@ public class Main : MelonMod
             }
             gem.Build(director, definitions, plortTemplate, template);
             Pedia.Register(gem.Definition, template, SlimeText(gem));
-            Pedia.Register(gem.Plort, plortTemplate, PlortText(gem));
         }
 
         // The original mod gave every gem the mint mango as its favourite (SR1 id 9).
@@ -130,17 +129,6 @@ public class Main : MelonMod
         "Diamond" => "The end of the chain, and the most valuable thing a rancher can keep in a " +
                      "corral. It shatters like all cut stone, so it is kept carefully.",
         _ => "A gem slime."
-    };
-
-    private static string PlortText(Gem gem) => gem.Key switch
-    {
-        "Garnet" => "Red stone left by a garnet slime. The cheapest of the gem plorts, which is not " +
-                    "to say cheap.",
-        "Sapphire" => "Blue stone from a sapphire slime, worth a little more than a garnet's.",
-        "Emerald" => "Green stone. The market pays well above a sapphire plort for one.",
-        "Amethyst" => "Violet stone, and one of the most valuable things to pass through the market.",
-        "Diamond" => "Clear stone from the last gem in the chain. Nothing else sells for more.",
-        _ => "A gem plort."
     };
 
     /// <summary>

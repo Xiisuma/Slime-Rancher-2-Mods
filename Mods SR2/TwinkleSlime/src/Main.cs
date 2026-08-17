@@ -89,10 +89,6 @@ public class Main : MelonMod
         Pedia.Register(LuminaSlimeDefinition, baseSlime,
             "The rare cousin of the twinkle slime, lit from the inside. Ranchers who find one " +
             "usually find it alone — there is barely one lumina for every ten twinkles.");
-        Pedia.Register(TwinklePlort, pinkPlort,
-            "Ground starlight. Worth rather more than a pink plort, and the market knows it.");
-        Pedia.Register(LuminaPlort, pinkPlort,
-            "A plort that glows on its own. Rare enough that the market pays nearly double for it.");
 
         Log.Msg("Twinkle and Lumina slimes created.");
     }
