@@ -25,7 +25,18 @@ public static class Pedia
     /// <summary>Category holding everything a rancher can carry, and the home of modded plorts.</summary>
     private const string ResourceCategory = "Resources";
 
+    /// <summary>One modded entry, and the categories the game's own asset lists it in.</summary>
+    private sealed class Written
+    {
+        public IdentifiableType Type;
+        public PediaEntry Entry;
+        public readonly List<PediaCategory> Categories = new();
+    }
+
     private static readonly Dictionary<string, PediaEntry> Registered = new();
+    private static readonly List<Written> Entries = new();
+
+    private static bool _wired;
 
     /// <summary>
     /// Writes a Slimepedia entry for <paramref name="type"/>, modelled on the entry of
@@ -65,11 +76,77 @@ public static class Pedia
         entry._description = text;
         entry._details = Retext(source._details, text);
 
-        int categories = AddToCategories(source, entry);
-        Registered[type.referenceId] = entry;
+        Written written = new() { Type = type, Entry = entry };
+        AddToCategories(source, written);
 
-        MelonLogger.Msg($"[SR2Kit] Slimepedia entry for {type.referenceId} in {categories} categories.");
+        Registered[type.referenceId] = entry;
+        Entries.Add(written);
+        Wire();
+
+        MelonLogger.Msg($"[SR2Kit] Slimepedia entry for {type.referenceId} in {written.Categories.Count} categories.");
         return entry;
+    }
+
+    /// <summary>Arranges for the running save's pedia to be told about the entries, once.</summary>
+    private static void Wire()
+    {
+        if (_wired) return;
+        _wired = true;
+
+        Hooks.OnSceneContextReady(context => Attach(context?.PediaDirector));
+    }
+
+    /// <summary>
+    /// Hands the entries to the pedia of a running save.
+    ///
+    /// Writing them into the category assets is not enough: the director builds its own runtime
+    /// categories from those assets, keeps a map from identifiable to entry for the unlock that
+    /// happens when a rancher first meets something, and holds the set of entries already unlocked —
+    /// none of which knows about an entry that appeared after the game was built. All three are
+    /// filled in here, which is also why the entries show up in a save started before the mod.
+    /// </summary>
+    private static void Attach(PediaDirector director)
+    {
+        if (director == null || Entries.Count == 0) return;
+
+        int shown = 0;
+        foreach (Written written in Entries)
+        {
+            if (written.Entry == null) continue;
+
+            // Each category asset knows the runtime category built from it, which is the list the
+            // Slimepedia actually draws.
+            foreach (PediaCategory category in written.Categories)
+            {
+                PediaRuntimeCategory runtime = category?.GetRuntimeCategory();
+                if (runtime == null || runtime.Contains(written.Entry)) continue;
+
+                runtime.AddDynamicItem(written.Entry);
+                shown++;
+            }
+
+            Link(director, written);
+            director.Unlock(written.Entry, showPopup: false);
+        }
+
+        MelonLogger.Msg($"[SR2Kit] {Entries.Count} Slimepedia entries handed to the running save ({shown} listed).");
+    }
+
+    /// <summary>Points the identifiable at its entry, the map the game unlocks through.</summary>
+    private static void Link(PediaDirector director, Written written)
+    {
+        if (director._customIdentToEntryMap == null) return;
+
+        foreach (PediaDirector.IdentToEntryItem item in director._customIdentToEntryMap)
+        {
+            if (item != null && item.Ident == written.Type) return;
+        }
+
+        director._customIdentToEntryMap.Add(new PediaDirector.IdentToEntryItem
+        {
+            Ident = written.Type,
+            Entry = written.Entry
+        });
     }
 
     /// <summary>The entry the game writes for an identifiable, or null if it has none.</summary>
@@ -121,23 +198,20 @@ public static class Pedia
     }
 
     /// <summary>Lists the new entry wherever the template is listed.</summary>
-    private static int AddToCategories(PediaEntry source, PediaEntry entry)
+    private static void AddToCategories(PediaEntry source, Written written)
     {
-        int added = 0;
-
         foreach (PediaCategory category in Resources.FindObjectsOfTypeAll<PediaCategory>())
         {
             Il2CppReferenceArray<PediaEntry> items = category._items;
-            if (items == null || !Contains(items, source) || Contains(items, entry)) continue;
+            if (items == null || !Contains(items, source) || Contains(items, written.Entry)) continue;
 
             Il2CppReferenceArray<PediaEntry> grown = new(items.Length + 1);
             for (int i = 0; i < items.Length; i++) grown[i] = items[i];
-            grown[items.Length] = entry;
+            grown[items.Length] = written.Entry;
 
             category._items = grown;
-            added++;
+            written.Categories.Add(category);
         }
-        return added;
     }
 
     private static bool Contains(Il2CppReferenceArray<PediaEntry> items, PediaEntry entry)
