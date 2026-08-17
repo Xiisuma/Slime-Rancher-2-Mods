@@ -119,8 +119,12 @@ public class Main : MelonMod
         slime.CanLargofy = false;
         SetDiet(slime, plort);
 
+        SlimeAppearance appearance = SlimeBuilder.BuildAppearance(
+            slime, template, colors[0], colors[1], colors[2], prefabName + "Appearance");
+
         GameObject prefab = PrefabHost.Clone(template.prefab, prefabName);
         Recolor(prefab, colors);
+        SlimeBuilder.RetargetPrefab(prefab, slime, appearance);
         IdentifiableRegistry.SetPrefab(slime, prefab);
 
         IdentifiableRegistry.AddSlimeDefinition(definitions, slime);

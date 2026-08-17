@@ -107,8 +107,12 @@ public class Main : MelonMod
         BubbleSlime.CanLargofy = false;   // a bubble is too fragile to fuse with anything
         SetDiet(BubbleSlime, BubblePlort);
 
+        SlimeAppearance appearance = SlimeBuilder.BuildAppearance(
+            BubbleSlime, pinkSlime, SlimeTop, SlimeMiddle, SlimeBottom, "SlimeBubbleAppearance");
+
         GameObject slimePrefab = PrefabHost.Clone(pinkSlime.prefab, "SlimeBubble");
         Recolor(slimePrefab, SlimeTop, SlimeMiddle, SlimeBottom);
+        SlimeBuilder.RetargetPrefab(slimePrefab, BubbleSlime, appearance);
         slimePrefab.AddComponent(Il2CppType.Of<BubblePop>());
         IdentifiableRegistry.SetPrefab(BubbleSlime, slimePrefab);
 

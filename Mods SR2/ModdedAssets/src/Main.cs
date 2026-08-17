@@ -73,7 +73,7 @@ public class Main : MelonMod
             Sprite sprite = AssetLibrary.Load(entry.Value);
             if (sprite != null)
             {
-                type.icon = sprite;
+                Apply(type, sprite);
                 applied++;
                 continue;
             }
@@ -83,12 +83,32 @@ public class Main : MelonMod
             sprite = IconRenderer.Render(type.prefab);
             if (sprite == null) continue;
 
-            type.icon = sprite;
+            Apply(type, sprite);
             rendered++;
         }
 
         Log.Msg($"Applied {applied} icons, rendered {rendered} " +
                 $"({absent} modded types not installed).");
+    }
+
+    /// <summary>
+    /// Sets the icon everywhere the game reads one.
+    ///
+    /// A <see cref="SlimeDefinition"/> overrides <c>Icon</c> to return the one on its appearance, so
+    /// setting the identifiable's own icon alone leaves the slime wearing its template's picture in
+    /// the vacpack and the silos.
+    /// </summary>
+    private static void Apply(IdentifiableType type, Sprite sprite)
+    {
+        type.icon = sprite;
+
+        SlimeDefinition slime = type.TryCast<SlimeDefinition>();
+        if (slime?.AppearancesDefault == null) return;
+
+        foreach (SlimeAppearance appearance in slime.AppearancesDefault)
+        {
+            if (appearance != null) appearance.IconNew = sprite;
+        }
     }
 }
 
