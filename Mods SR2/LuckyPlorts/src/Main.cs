@@ -14,16 +14,18 @@ namespace LuckyPlorts;
 /// Port of the Slime Rancher 1 mod "Lucky Plorts" by DogeisCut to Slime Rancher 2
 /// (Il2Cpp + MelonLoader, no modding framework — see the shared SR2Kit).
 ///
-/// Lucky Slimes produce a golden Lucky Plort when they eat a Stony Hen.
+/// Lucky Slimes produce a pale Lucky Plort when they eat a Stony Hen.
 /// </summary>
 public class Main : MelonMod
 {
     private const string PlortReferenceId = "LuckyPlorts_PlortLucky";
     private const int PlortValue = 60;
 
-    private static readonly Color GoldTop = new(1.0f, 0.85f, 0.20f, 1f);
-    private static readonly Color GoldMiddle = new(1.0f, 0.75f, 0.10f, 1f);
-    private static readonly Color GoldBottom = new(0.9f, 0.60f, 0.05f, 1f);
+    // Off-white, barely grey where the light does not reach: the plort reads as pale stone rather
+    // than as the gold slime it comes from.
+    private static readonly Color PaleTop = new(0.98f, 0.98f, 0.99f, 1f);
+    private static readonly Color PaleMiddle = new(0.87f, 0.88f, 0.91f, 1f);
+    private static readonly Color PaleBottom = new(0.72f, 0.74f, 0.78f, 1f);
 
     public static Main Instance { get; private set; }
     public static MelonLogger.Instance Log => Instance.LoggerInstance;
@@ -54,28 +56,15 @@ public class Main : MelonMod
         LuckyPlort = IdentifiableRegistry.Create(director, pinkPlort, PlortReferenceId, "Actor", "l.lucky_plort");
         if (LuckyPlort == null) return;
 
-        LuckyPlort.color = GoldMiddle;
+        LuckyPlort.color = PaleMiddle;
 
         GameObject prefab = PrefabHost.Clone(pinkPlort.prefab, "PlortLucky");
-        Recolor(prefab);
+        // Through the kit, which gives the clone its own material copies: painting the ones it
+        // inherited would turn every vanilla pink plort pale as well.
+        Recolor.Apply(prefab, PaleTop, PaleMiddle, PaleBottom);
         IdentifiableRegistry.SetPrefab(LuckyPlort, prefab);
 
         Log.Msg("Lucky Plort created.");
-    }
-
-    private static void Recolor(GameObject prefab)
-    {
-        foreach (MeshRenderer renderer in prefab.GetComponentsInChildren<MeshRenderer>(true))
-        {
-            foreach (Material material in renderer.materials)
-            {
-                if (material == null) continue;
-                if (material.HasProperty("_TopColor")) material.SetColor("_TopColor", GoldTop);
-                if (material.HasProperty("_MiddleColor")) material.SetColor("_MiddleColor", GoldMiddle);
-                if (material.HasProperty("_BottomColor")) material.SetColor("_BottomColor", GoldBottom);
-                if (material.HasProperty("_Color")) material.SetColor("_Color", GoldMiddle);
-            }
-        }
     }
 
     // ---------------------------------------------------------------- Per-save setup
