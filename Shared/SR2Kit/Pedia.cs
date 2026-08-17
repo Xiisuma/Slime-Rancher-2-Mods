@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using Il2Cpp;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using HarmonyLib;
+using Il2CppMonomiPark.SlimeRancher.DataModel;
 using Il2CppMonomiPark.SlimeRancher.Pedia;
 using MelonLoader;
 using MelonLoader.Utils;
@@ -127,7 +129,6 @@ public static class Pedia
             Link(director, written);
         }
 
-        Relock(director);
         MelonLogger.Msg($"[SR2Kit] {Entries.Count} Slimepedia entries handed to the running save ({shown} listed).");
     }
 
@@ -135,12 +136,16 @@ public static class Pedia
     /// Puts an entry back to undiscovered, once and only once.
     ///
     /// An earlier version unlocked the modded entries outright, so saves carry slimes their rancher
-    /// has never met. Locking them again on every load would make discovery impossible, so each
-    /// reference id is written to a file next to the mod's settings the first time it is locked, and
-    /// skipped forever after — what the rancher finds afterwards is theirs to keep.
+    /// has never met. This runs on the pedia model, right after a save has filled it — doing it when
+    /// the scene loads was undone by the save being read afterwards. Locking them again on every
+    /// load would make discovery impossible, so each reference id is written to a file next to the
+    /// mod's settings the first time it is locked, and skipped forever after: what the rancher finds
+    /// later is theirs to keep.
     /// </summary>
-    private static void Relock(PediaDirector director)
+    internal static void Relock(PediaModel model)
     {
+        if (model?.unlocked == null || Entries.Count == 0) return;
+
         HashSet<string> already = Record();
 
         List<string> locked = new();
@@ -148,7 +153,7 @@ public static class Pedia
         {
             if (written.Entry == null || already.Contains(written.Type.referenceId)) continue;
 
-            director.DebugReLock(written.Entry);
+            model.unlocked.Remove(written.Entry);
             locked.Add(written.Type.referenceId);
         }
         if (locked.Count == 0) return;
@@ -271,4 +276,11 @@ public static class Pedia
 
         return FallbackTable;
     }
+}
+
+/// <summary>Catches the moment a save has filled the pedia, the only point where a relock sticks.</summary>
+[HarmonyPatch(typeof(PediaModel), nameof(PediaModel.Push))]
+internal static class Patch_PediaModel_Push
+{
+    private static void Postfix(PediaModel __instance) => Pedia.Relock(__instance);
 }

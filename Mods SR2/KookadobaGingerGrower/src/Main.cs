@@ -43,6 +43,7 @@ public class Main : MelonMod
     private static void Setup()
     {
         GingerCrop.Build();
+        GingerGroups.Apply();
         GrowerPersistence.Register();
         GoldSlimeTaste.Apply();
     }

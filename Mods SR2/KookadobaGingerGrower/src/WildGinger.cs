@@ -7,23 +7,23 @@ using UnityEngine;
 namespace KookadobaGingerGrower;
 
 /// <summary>
-/// Lets Gilded Ginger come up on the wild veggie patches.
+/// Lets Gilded Ginger come up in the wild, among the pogo fruit.
 ///
 /// The game grows it at authored patch nodes only, a handful per zone, which is why a rancher can
-/// play for hours without seeing one. Here it joins the patches that already grow carrots, beets and
-/// parsnips in the open: those beds pick what to spawn from a weighted table, so ginger is added to
-/// the table as a small share of it.
+/// play for hours without seeing one. Here it joins the pogo fruit trees: those pick what to spawn
+/// from a weighted table, so ginger is added to the table as a thin share of it — rare enough that
+/// finding one is still worth something.
 ///
-/// Fruit trees are left alone — a ginger hanging off a branch would be a strange sight — and so is
-/// anything growing inside a plot, so a garden still yields exactly what was planted in it.
+/// Every other patch is left alone, and so is anything growing inside a plot, so a garden still
+/// yields exactly what was planted in it.
 /// </summary>
 public static class WildGinger
 {
-    /// <summary>Share of a patch's table the ginger takes: roughly one crop in twelve.</summary>
-    private const float Share = 0.08f;
+    /// <summary>Share of a tree's table the ginger takes: about one pogo fruit in fifty.</summary>
+    private const float Share = 0.02f;
 
-    /// <summary>Reference-id ending the game gives its ground crops.</summary>
-    private const string VeggieSuffix = "Veggie";
+    /// <summary>Reference-id fragment of the crop the ginger hides among.</summary>
+    private const string Host = "pogo";
 
     /// <summary>How many patches are worth naming in the log before it turns into noise.</summary>
     private const int LocationLogLimit = 10;
@@ -50,7 +50,7 @@ public static class WildGinger
         if (spawner._landPlot != null || spawner.GetComponentInParent<LandPlot>(true) != null) return;
 
         ResourceGrowerDefinition definition = spawner._resourceGrowerDefinition;
-        if (definition == null || !IsVeggiePatch(definition)) return;
+        if (definition == null || !IsHostPatch(definition)) return;
 
         string key = definition.name;
         if (!Sown.TryGetValue(key, out ResourceGrowerDefinition sown))
@@ -103,15 +103,11 @@ public static class WildGinger
         return sown;
     }
 
-    /// <summary>
-    /// Whether a patch grows something out of the ground. The game names its ground crops
-    /// <c>CarrotVeggie</c>, <c>BeetVeggie</c> and so on, which is the same test the rest of the mod
-    /// uses to know a veggie from a fruit.
-    /// </summary>
-    private static bool IsVeggiePatch(ResourceGrowerDefinition definition)
+    /// <summary>Whether this is a patch of the crop the ginger hides among.</summary>
+    private static bool IsHostPatch(ResourceGrowerDefinition definition)
     {
         string refId = definition._primaryResourceType?.ReferenceId;
-        return refId != null && refId.EndsWith(VeggieSuffix);
+        return refId != null && refId.ToLowerInvariant().Contains(Host);
     }
 }
 
