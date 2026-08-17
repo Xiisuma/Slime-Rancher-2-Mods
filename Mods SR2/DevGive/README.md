@@ -13,7 +13,7 @@ It talks to nothing but the game, so it keeps working when a console mod does no
 
 ```ini
 [DevGive]
-items = "GemSlimes_SlimeSapphire:1, Lucky:1"
+items = "Gold:1, StonyHen:1"
 hotkey = "F7"
 ```
 
@@ -38,6 +38,7 @@ Unity's old `KeyCode` ones.
 |---|---|
 | Lucky slime | `Lucky` |
 | Gold slime | `Gold` |
+| Stony hen | `StonyHen` |
 | Gilded ginger | `GingerVeggie` |
 | Gem slimes | `GemSlimes_SlimeGarnet`, `…Sapphire`, `…Emerald`, `…Amethyst`, `…Diamond` |
 | Gem plorts | `GemSlimes_PlortGarnet`, `…Sapphire`, `…Emerald`, `…Amethyst`, `…Diamond` |

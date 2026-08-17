@@ -21,7 +21,7 @@ namespace DevGive;
 /// </summary>
 public class Main : MelonMod
 {
-    private const string DefaultItems = "GemSlimes_SlimeSapphire:1, Lucky:1";
+    private const string DefaultItems = "Gold:1, StonyHen:1";
 
     private MelonPreferences_Entry<string> _items;
     private MelonPreferences_Entry<string> _hotkey;
@@ -41,6 +41,24 @@ public class Main : MelonMod
         _hotkey = category.CreateEntry("hotkey", "F7",
             description: "Key that hands the items over. Names come from Unity's input system: " +
                          "F1..F12, digit1, numpad1, backquote...");
+
+        // Say at the main menu what the key is going to hand over, so a typo in the list is caught
+        // before a save is loaded rather than on a silent key press.
+        Hooks.OnLookupDirectorReady(_ => Announce());
+    }
+
+    /// <summary>Logs what each configured name resolves to.</summary>
+    private void Announce()
+    {
+        foreach (string request in _items.Value.Split(','))
+        {
+            string name = Name(request.Trim(), out int count);
+            if (name.Length == 0) continue;
+
+            IdentifiableType type = Resolve(name);
+            if (type == null) Log.Warning($"'{name}' matches nothing; {_hotkey.Value} will skip it.");
+            else Log.Msg($"{_hotkey.Value} gives {count} x {type.ReferenceId}.");
+        }
     }
 
     public override void OnUpdate()
@@ -62,17 +80,8 @@ public class Main : MelonMod
 
     private void GiveOne(AmmoSlotManager ammo, string request)
     {
-        if (string.IsNullOrEmpty(request)) return;
-
-        string name = request;
-        int count = 1;
-
-        int separator = request.LastIndexOf(':');
-        if (separator > 0)
-        {
-            name = request.Substring(0, separator).Trim();
-            if (!int.TryParse(request.Substring(separator + 1).Trim(), out count) || count < 1) count = 1;
-        }
+        string name = Name(request, out int count);
+        if (name.Length == 0) return;
 
         IdentifiableType type = Resolve(name);
         if (type == null)
@@ -91,6 +100,19 @@ public class Main : MelonMod
         if (given == count) Log.Msg($"Gave {given} x {type.referenceId}.");
         else if (given > 0) Log.Warning($"Gave {given} x {type.referenceId} of {count}; the vacpack took no more.");
         else Log.Warning($"The vacpack refuses {type.referenceId}: no free slot that accepts it.");
+    }
+
+    /// <summary>Splits one "id:count" request; the count may be left out.</summary>
+    private static string Name(string request, out int count)
+    {
+        count = 1;
+        if (string.IsNullOrEmpty(request)) return string.Empty;
+
+        int separator = request.LastIndexOf(':');
+        if (separator < 0) return request.Trim();
+
+        if (!int.TryParse(request.Substring(separator + 1).Trim(), out count) || count < 1) count = 1;
+        return request.Substring(0, separator).Trim();
     }
 
     private static AmmoSlotManager Vacpack()
