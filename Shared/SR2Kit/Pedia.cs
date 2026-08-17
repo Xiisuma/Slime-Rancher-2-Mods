@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using Il2Cpp;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppMonomiPark.SlimeRancher.Pedia;
 using MelonLoader;
+using MelonLoader.Utils;
 using UnityEngine;
 using UnityEngine.Localization;
 
@@ -53,7 +56,7 @@ public static class Pedia
             return null;
         }
 
-        IdentifiablePediaEntry entry = Object.Instantiate(source);
+        IdentifiablePediaEntry entry = UnityEngine.Object.Instantiate(source);
         entry.hideFlags = HideFlags.HideAndDontSave;
         entry.name = $"Pedia{type.referenceId}";
         entry._identifiableType = type;
@@ -124,8 +127,62 @@ public static class Pedia
             Link(director, written);
         }
 
+        Relock(director);
         MelonLogger.Msg($"[SR2Kit] {Entries.Count} Slimepedia entries handed to the running save ({shown} listed).");
     }
+
+    /// <summary>
+    /// Puts an entry back to undiscovered, once and only once.
+    ///
+    /// An earlier version unlocked the modded entries outright, so saves carry slimes their rancher
+    /// has never met. Locking them again on every load would make discovery impossible, so each
+    /// reference id is written to a file next to the mod's settings the first time it is locked, and
+    /// skipped forever after — what the rancher finds afterwards is theirs to keep.
+    /// </summary>
+    private static void Relock(PediaDirector director)
+    {
+        HashSet<string> already = Record();
+
+        List<string> locked = new();
+        foreach (Written written in Entries)
+        {
+            if (written.Entry == null || already.Contains(written.Type.referenceId)) continue;
+
+            director.DebugReLock(written.Entry);
+            locked.Add(written.Type.referenceId);
+        }
+        if (locked.Count == 0) return;
+
+        Remember(locked);
+        MelonLogger.Msg($"[SR2Kit] {locked.Count} Slimepedia entries put back to undiscovered.");
+    }
+
+    /// <summary>Reference ids already locked once, from the file shared by every mod using the kit.</summary>
+    private static HashSet<string> Record()
+    {
+        HashSet<string> ids = new();
+        try
+        {
+            if (File.Exists(RecordPath))
+            {
+                foreach (string line in File.ReadAllLines(RecordPath))
+                {
+                    if (line.Length > 0) ids.Add(line.Trim());
+                }
+            }
+        }
+        catch (Exception e) { MelonLogger.Warning($"[SR2Kit] Could not read {RecordPath}: {e.Message}"); }
+
+        return ids;
+    }
+
+    private static void Remember(List<string> ids)
+    {
+        try { File.AppendAllLines(RecordPath, ids); }
+        catch (Exception e) { MelonLogger.Warning($"[SR2Kit] Could not write {RecordPath}: {e.Message}"); }
+    }
+
+    private static string RecordPath => Path.Combine(MelonEnvironment.UserDataDirectory, "SR2Kit-pedia.txt");
 
     /// <summary>Points the identifiable at its entry, the map the game unlocks through.</summary>
     private static void Link(PediaDirector director, Written written)
