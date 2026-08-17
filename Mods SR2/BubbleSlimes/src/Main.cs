@@ -121,6 +121,12 @@ public class Main : MelonMod
         // Rare member of the pink slime's spawn sets: one bubble slime in fifty, the ratio the
         // original mod aimed for.
         SlimeSpawns.Register(BubbleSlime, 0.02f);
+
+        Pedia.Register(BubbleSlime, pinkSlime,
+            "A slime with the constitution of a soap bubble. Walk into one and it bursts, leaving " +
+            "its plort and a splash of water. It cannot be made into a largo — nothing holds.");
+        Pedia.Register(BubblePlort, pinkPlort,
+            "What is left when a bubble slime pops. Surprisingly solid, for something that was air.");
         Log.Msg("Bubble Slime created.");
     }
 

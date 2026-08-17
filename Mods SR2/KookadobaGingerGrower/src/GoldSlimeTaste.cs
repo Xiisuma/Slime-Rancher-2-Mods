@@ -32,7 +32,17 @@ public static class GoldSlimeTaste
         }
 
         if (Diets.AddFavorite(gold, GingerCrop.Ginger))
-            Main.Log.Msg($"{gold.ReferenceId} now favours {GingerCrop.Ginger.name}, and still eats the rest.");
+            Main.Log.Msg($"{gold.ReferenceId} now favours {GingerCrop.Ginger.name}.");
+
+        // The vanilla gold slime has no food at all — no food groups, no eat map — so it never ate
+        // anything and the plort group its diet carries never came up. Giving it a first meal wakes
+        // its appetite, plorts included, which is not what a gold slime does. It cannot become a
+        // largo either, so the group goes.
+        if (!gold.CanLargofy && gold.Diet.EdiblePlortIdentifiableTypeGroup != null)
+        {
+            gold.Diet.EdiblePlortIdentifiableTypeGroup = null;
+            Main.Log.Msg($"{gold.ReferenceId} no longer eats plorts.");
+        }
 
         _done = true;
     }

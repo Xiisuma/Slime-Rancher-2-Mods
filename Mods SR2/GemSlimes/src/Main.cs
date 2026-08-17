@@ -90,6 +90,8 @@ public class Main : MelonMod
                 template = pink;
             }
             gem.Build(director, definitions, plortTemplate, template);
+            Pedia.Register(gem.Definition, template, SlimeText(gem));
+            Pedia.Register(gem.Plort, plortTemplate, PlortText(gem));
         }
 
         // The original mod gave every gem the mint mango as its favourite (SR1 id 9).
@@ -111,6 +113,35 @@ public class Main : MelonMod
 
         Log.Msg("Five gem slimes created.");
     }
+
+    /// <summary>What the Slimepedia says about each gem. The chain is the story, so each entry names
+    /// the step it belongs to.</summary>
+    private static string SlimeText(Gem gem) => gem.Key switch
+    {
+        "Garnet" => "The commonest gem slime, cut from a crystal slime somewhere along the way. It " +
+                    "shatters into its plort at a touch, so ranchers learn to keep their distance — " +
+                    "or not to, depending on what they came for.",
+        "Sapphire" => "A gem with the shape and the temper of a rock slime, deep blue. Feed it a " +
+                      "lucky slime, whole, and it grows into an emerald.",
+        "Emerald" => "Green stone with the heft of a rock slime. It grows out of a sapphire, and " +
+                     "into an amethyst if it is fed a garnet slime.",
+        "Amethyst" => "Violet, brittle, and expensive. It comes from an emerald that has eaten a " +
+                      "garnet, and becomes a diamond on a diet of gold slimes.",
+        "Diamond" => "The end of the chain, and the most valuable thing a rancher can keep in a " +
+                     "corral. It shatters like all cut stone, so it is kept carefully.",
+        _ => "A gem slime."
+    };
+
+    private static string PlortText(Gem gem) => gem.Key switch
+    {
+        "Garnet" => "Red stone left by a garnet slime. The cheapest of the gem plorts, which is not " +
+                    "to say cheap.",
+        "Sapphire" => "Blue stone from a sapphire slime, worth a little more than a garnet's.",
+        "Emerald" => "Green stone. The market pays well above a sapphire plort for one.",
+        "Amethyst" => "Violet stone, and one of the most valuable things to pass through the market.",
+        "Diamond" => "Clear stone from the last gem in the chain. Nothing else sells for more.",
+        _ => "A gem plort."
+    };
 
     /// <summary>
     /// The upgrade chain from the original mod: a gem eats one specific slime and grows into the
