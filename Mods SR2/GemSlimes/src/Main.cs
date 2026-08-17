@@ -27,7 +27,7 @@ public class Main : MelonMod
     // plort of its own there — it produced the mosaic plort, a slime Slime Rancher 2 does not have —
     // so it gets its own, priced below the sapphire to keep the chain's ramp intact.
     private static readonly Gem Garnet = new("Garnet", "Garnet Slime", "crystal", true, 90, 70f, "FF000B", "FF003D");
-    private static readonly Gem Sapphire = new("Sapphire", "Sapphire Slime", "pink", false, 125, 80f, "1504C1", "2536AC");
+    private static readonly Gem Sapphire = new("Sapphire", "Sapphire Slime", "rock", false, 125, 80f, "1504C1", "2536AC");
     private static readonly Gem Emerald = new("Emerald", "Emerald Slime", "pink", false, 300, 215f, "169E36", "1D953C");
     private static readonly Gem Amethyst = new("Amethyst", "Amethyst Slime", "crystal", true, 450, 360f, "7F006E", "7F0092");
     private static readonly Gem Diamond = new("Diamond", "Diamond Slime", "crystal", true, 600, 495f, "6DD6EE", "00A2FF");
@@ -78,18 +78,16 @@ public class Main : MelonMod
             return;
         }
 
-        // Crystal slimes carry the spikes and the launch behaviour that make a gem read as one; when
-        // the game has no crystal slime the gems fall back to the pink slime and simply lose them.
-        SlimeDefinition crystal = Lookup.FindSlimeDefinition(definitions, "slime", "crystal");
-        if (crystal?.prefab == null)
-        {
-            Log.Warning("Crystal slime not found; the crystal gems fall back to the pink slime.");
-            crystal = pink;
-        }
-
         foreach (Gem gem in Gems)
         {
-            SlimeDefinition template = gem.BaseSlimeKeyword == "crystal" ? crystal : pink;
+            // Each gem names the slime it is cut from: crystal for the brittle ones, rock for the
+            // sapphire. A missing template falls back to the pink slime, which every save has.
+            SlimeDefinition template = Lookup.FindSlimeDefinition(definitions, "slime", gem.BaseSlimeKeyword);
+            if (template?.prefab == null)
+            {
+                Log.Warning($"No {gem.BaseSlimeKeyword} slime in this game; {gem.DisplayName} is cut from the pink slime.");
+                template = pink;
+            }
             gem.Build(director, definitions, plortTemplate, template);
         }
 
@@ -105,9 +103,10 @@ public class Main : MelonMod
 
         SetUpProgression();
 
-        // Only the two entry gems are found in the wild; the rest are grown by the player.
-        SlimeSpawns.Register(Garnet.Definition, 0.02f, "crystal");
-        SlimeSpawns.Register(Sapphire.Definition, 0.04f);
+        // Only the two entry gems are found in the wild; the rest are grown by the player. Each one
+        // shares the spawns of the slime it was cut from, so it turns up where it belongs.
+        SlimeSpawns.Register(Garnet.Definition, 0.02f, Garnet.BaseSlimeKeyword);
+        SlimeSpawns.Register(Sapphire.Definition, 0.04f, Sapphire.BaseSlimeKeyword);
 
         Log.Msg("Five gem slimes created.");
     }

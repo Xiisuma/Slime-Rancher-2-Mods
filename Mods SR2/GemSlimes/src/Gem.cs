@@ -175,7 +175,29 @@ public sealed class Gem
             MinDrive = 0f
         });
 
+        // The eat map only says what a meal turns into. What a slime is willing to bite comes from
+        // its food lists, so the prey has to be named there too or the gem simply ignores it.
+        diet.AdditionalFoodIdents = Append(diet.AdditionalFoodIdents, food);
+        diet.FavoriteIdents = Append(diet.FavoriteIdents, food);
+
         Main.Log.Msg($"{DisplayName} eating {food.referenceId} now becomes {into.DisplayName}.");
+    }
+
+    /// <summary>Adds an identifiable to one of the diet's lists, leaving it alone if already there.</summary>
+    private static Il2CppReferenceArray<IdentifiableType> Append(
+        Il2CppReferenceArray<IdentifiableType> list, IdentifiableType type)
+    {
+        if (list == null) list = new Il2CppReferenceArray<IdentifiableType>(0);
+
+        foreach (IdentifiableType existing in list)
+        {
+            if (existing == type) return list;
+        }
+
+        Il2CppReferenceArray<IdentifiableType> grown = new(list.Length + 1);
+        for (int i = 0; i < list.Length; i++) grown[i] = list[i];
+        grown[list.Length] = type;
+        return grown;
     }
 
     // ---------------------------------------------------------------- Prefabs and appearance
