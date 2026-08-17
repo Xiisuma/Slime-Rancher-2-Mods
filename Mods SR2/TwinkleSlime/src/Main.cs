@@ -78,9 +78,10 @@ public class Main : MelonMod
         LuminaSlimeDefinition = CreateSlime(director, definitions, baseSlime, LuminaSlimeId,
             "l.lumina_slime", "SlimeLumina", LuminaColors, LuminaPlort);
 
-        // Twinkles turn up now and then, luminas rarely — they were the secret variant in SR1.
-        SlimeSpawns.Register(TwinkleSlimeDefinition, 1.5f);
-        SlimeSpawns.Register(LuminaSlimeDefinition, 0.4f);
+        // Shares of a spawn set, not absolute weights: roughly one twinkle in fifty slimes, and a
+        // lumina in five hundred — it was the secret variant in Slime Rancher 1.
+        SlimeSpawns.Register(TwinkleSlimeDefinition, 0.02f);
+        SlimeSpawns.Register(LuminaSlimeDefinition, 0.002f);
 
         Log.Msg("Twinkle and Lumina slimes created.");
     }

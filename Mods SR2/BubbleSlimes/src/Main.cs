@@ -118,8 +118,9 @@ public class Main : MelonMod
 
         IdentifiableRegistry.AddSlimeDefinition(definitions, BubbleSlime);
 
-        // Rare member of the pink slime's spawn sets, the weight the original mod used.
-        SlimeSpawns.Register(BubbleSlime, 0.04f);
+        // Rare member of the pink slime's spawn sets: one bubble slime in fifty, the ratio the
+        // original mod aimed for.
+        SlimeSpawns.Register(BubbleSlime, 0.02f);
         Log.Msg("Bubble Slime created.");
     }
 

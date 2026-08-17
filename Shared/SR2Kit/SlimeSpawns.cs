@@ -18,7 +18,7 @@ public static class SlimeSpawns
     private sealed class Entry
     {
         public IdentifiableType Slime;
-        public float Weight;
+        public float Share;
         public string HostKeyword;
     }
 
@@ -32,12 +32,16 @@ public static class SlimeSpawns
     /// <summary>
     /// Registers a slime for wild spawning.
     /// </summary>
-    /// <param name="weight">Spawn weight relative to the other members of the set it joins.</param>
+    /// <param name="share">
+    /// Fraction of a spawn set the slime takes, relative to the weights already in it: 0.02 makes it
+    /// roughly one spawn in fifty. An absolute weight cannot be used, because the vanilla sets do not
+    /// agree on a scale — the same number is a rarity in one and the commonest slime in another.
+    /// </param>
     /// <param name="hostKeyword">
     /// Reference-id fragment of the vanilla slime whose spawn sets are joined. Keeping to one host
     /// is what puts the modded slime in a sensible part of the world instead of everywhere.
     /// </param>
-    public static void Register(IdentifiableType slime, float weight, string hostKeyword = "pink")
+    public static void Register(IdentifiableType slime, float share, string hostKeyword = "pink")
     {
         if (slime == null) return;
 
@@ -45,7 +49,7 @@ public static class SlimeSpawns
         {
             if (existing.Slime == slime) return;
         }
-        Entries.Add(new Entry { Slime = slime, Weight = weight, HostKeyword = hostKeyword });
+        Entries.Add(new Entry { Slime = slime, Share = share, HostKeyword = hostKeyword });
     }
 
     /// <summary>Drops the per-save counter when another save is loaded.</summary>
@@ -68,9 +72,12 @@ public static class SlimeSpawns
             {
                 if (!Hosts(set, entry.HostKeyword) || Contains(set, entry.Slime)) continue;
 
+                float weight = TotalWeight(set) * entry.Share;
+                if (weight <= 0f) continue;
+
                 Il2CppReferenceArray<SlimeSet.Member> grown = new(set.Members.Length + 1);
                 for (int i = 0; i < set.Members.Length; i++) grown[i] = set.Members[i];
-                grown[set.Members.Length] = new SlimeSet.Member { IdentType = entry.Slime, Weight = entry.Weight };
+                grown[set.Members.Length] = new SlimeSet.Member { IdentType = entry.Slime, Weight = weight };
 
                 set.Members = grown;
                 _patched++;
@@ -82,10 +89,22 @@ public static class SlimeSpawns
                     Vector3 position = spawner.transform.position;
                     MelonLoader.MelonLogger.Msg(
                         $"[SR2Kit] {entry.Slime.referenceId} spawns in {spawner.gameObject.scene.name} " +
-                        $"at ({position.x:F0}, {position.y:F0}, {position.z:F0}).");
+                        $"at ({position.x:F0}, {position.y:F0}, {position.z:F0}), " +
+                        $"weight {weight:0.###} against {TotalWeight(set) - weight:0.###}.");
                 }
             }
         }
+    }
+
+    /// <summary>Sum of the weights already in a set, the scale a share is measured against.</summary>
+    private static float TotalWeight(SlimeSet set)
+    {
+        float total = 0f;
+        foreach (SlimeSet.Member member in set.Members)
+        {
+            if (member != null) total += member.Weight;
+        }
+        return total;
     }
 
     private static bool Hosts(SlimeSet set, string keyword)

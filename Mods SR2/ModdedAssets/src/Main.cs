@@ -14,7 +14,7 @@ namespace ModdedAssets;
 /// Gives the ported mods their original artwork back.
 ///
 /// Every ported mod creates its content by cloning a vanilla asset, so a modded slime or plort ends
-/// up wearing the icon of whatever it was cloned from  every bubble plort looks like a pink plort
+/// up wearing the icon of whatever it was cloned from: every bubble plort looks like a pink plort
 /// in the vacpack, the market and the silos. The Slime Rancher 1 mods shipped their own icons inside
 /// their DLLs; this mod carries those files and hands them to whichever ported mod is installed.
 ///
@@ -40,16 +40,46 @@ public class Main : MelonMod
         ["GemSlimes_PlortAmethyst"] = "plortAmethyst.rgba",
         ["GemSlimes_PlortDiamond"] = "plortDiamond.rgba",
         ["GemSlimes_PlortEmerald"] = "plortEmerald.rgba",
-        ["GemSlimes_PlortSapphire"] = "plortSapphire.rgba"
+        ["GemSlimes_PlortSapphire"] = "plortSapphire.rgba",
+
+        // TwinkleSlime: PNG files in the original mod, except the twinkle slime's own icon — the mod
+        // never shipped one because Slime Rancher 1 already had the slime. That one comes straight
+        // out of Slime Rancher 1's own assets (iconSlimeTwinkle).
+        ["TwinkleSlime_PlortTwinkle"] = "plortTwinkle.rgba",
+        ["TwinkleSlime_PlortLumina"] = "plortLumina.rgba",
+        ["TwinkleSlime_SlimeLumina"] = "slimeLumina.rgba",
+        ["TwinkleSlime_SlimeTwinkle"] = "slimeTwinkle.rgba"
     };
 
     public static Main Instance { get; private set; }
     public static MelonLogger.Instance Log => Instance.LoggerInstance;
 
+    /// <summary>Reference ids already given their icon, so the second pass only does what is left.</summary>
+    private static readonly HashSet<string> Done = new();
+
     public override void OnInitializeMelon()
     {
         Instance = this;
+
+        // MelonLoader fires the lookup callbacks in the order the mods subscribed, so a mod loaded
+        // after this one has not created its content yet when the first pass runs. Whatever is still
+        // missing is picked up by OnUpdate.
         Hooks.OnLookupDirectorReady(ApplyIcons);
+    }
+
+    /// <summary>Seconds between retries while some modded types are still unregistered.</summary>
+    private const float RetryInterval = 2f;
+
+    private float _nextRetry;
+
+    public override void OnUpdate()
+    {
+        if (Done.Count == Icons.Count) return;
+        if (Time.time < _nextRetry) return;
+        _nextRetry = Time.time + RetryInterval;
+
+        LookupDirector director = LookupDirector.GetIfReady();
+        if (director != null) ApplyIcons(director);
     }
 
     /// <summary>
@@ -64,16 +94,20 @@ public class Main : MelonMod
 
         foreach (KeyValuePair<string, string> entry in Icons)
         {
+            if (Done.Contains(entry.Key)) continue;
+
             if (!director.TryFindIdentifiableTypeByReferenceId(entry.Key, out IdentifiableType type))
             {
                 absent++;
                 continue;
             }
 
-            Sprite sprite = AssetLibrary.Load(entry.Value);
+            // A null asset means the original mod shipped no artwork for this one.
+            Sprite sprite = entry.Value == null ? null : AssetLibrary.Load(entry.Value);
             if (sprite != null)
             {
                 Apply(type, sprite);
+                Done.Add(entry.Key);
                 applied++;
                 continue;
             }
@@ -84,11 +118,14 @@ public class Main : MelonMod
             if (sprite == null) continue;
 
             Apply(type, sprite);
+            Done.Add(entry.Key);
             rendered++;
         }
 
+        if (applied == 0 && rendered == 0) return;
+
         Log.Msg($"Applied {applied} icons, rendered {rendered} " +
-                $"({absent} modded types not installed).");
+                $"({absent} modded types not registered yet).");
     }
 
     /// <summary>
