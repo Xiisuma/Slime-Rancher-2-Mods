@@ -237,6 +237,18 @@ public sealed class Gem
 
         foreach (SlimeEat eat in prefab.GetComponentsInChildren<SlimeEat>(true))
             eat.SlimeDefinition = slime;
+
+        // The spikes a crystal slime throws are not read from the appearance: the launcher holds its
+        // own two prefabs, and a clone still holds the vanilla ones. Without this the gem is cut
+        // stone and throws crystal-slime blue.
+        CrystalAppearance crystals = appearance?.CrystalAppearance;
+        if (crystals == null) return;
+
+        foreach (CrystalSlimeLaunch launcher in prefab.GetComponentsInChildren<CrystalSlimeLaunch>(true))
+        {
+            if (crystals.LargeCrystalPrefab != null) launcher._launchSpawnLarge = crystals.LargeCrystalPrefab;
+            if (crystals.SmallCrystalPrefab != null) launcher._launchSpawnSmall = crystals.SmallCrystalPrefab;
+        }
     }
 
     /// <summary>

@@ -26,12 +26,13 @@ public class Main : MelonMod
     /// <summary>Reference id of a modded type, and the asset file that should illustrate it.</summary>
     private static readonly Dictionary<string, string> Icons = new()
     {
-        // BubbleSlimes: PNG files in the original mod.
+        // BubbleSlimes.
         ["BubbleSlimes_SlimeBubble"] = "slimeBubble.rgba",
         ["BubbleSlimes_PlortBubble"] = "plortBubble.rgba",
 
-        // LuckyPlorts and GemSlimes: unpacked from the Slime Rancher 1 asset bundles they shipped in.
+        // LuckyPlorts and GemSlimes.
         ["LuckyPlorts_PlortLucky"] = "plortLucky.rgba",
+        ["GemSlimes_PlortGarnet"] = "plortGarnet.rgba",
         ["GemSlimes_SlimeAmethyst"] = "slimeAmethyst.rgba",
         ["GemSlimes_SlimeDiamond"] = "slimeDiamond.rgba",
         ["GemSlimes_SlimeEmerald"] = "slimeEmerald.rgba",
@@ -42,9 +43,7 @@ public class Main : MelonMod
         ["GemSlimes_PlortEmerald"] = "plortEmerald.rgba",
         ["GemSlimes_PlortSapphire"] = "plortSapphire.rgba",
 
-        // TwinkleSlime: PNG files in the original mod, except the twinkle slime's own icon — the mod
-        // never shipped one because Slime Rancher 1 already had the slime. That one comes straight
-        // out of Slime Rancher 1's own assets (iconSlimeTwinkle).
+        // TwinkleSlime.
         ["TwinkleSlime_PlortTwinkle"] = "plortTwinkle.rgba",
         ["TwinkleSlime_PlortLumina"] = "plortLumina.rgba",
         ["TwinkleSlime_SlimeLumina"] = "slimeLumina.rgba",

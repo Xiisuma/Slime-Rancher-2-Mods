@@ -7,8 +7,8 @@ Five gem slimes and their plorts, in progression order:
 | Gem | Cut from | Plort | Shatters on touch |
 |---|---|---|---|
 | Garnet | Crystal slime | 90 (saturates at 70) | yes |
-| Sapphire | Pink slime | 125 (80) | no |
-| Emerald | Pink slime | 300 (215) | no |
+| Sapphire | Rock slime | 125 (80) | no |
+| Emerald | Rock slime | 300 (215) | no |
 | Amethyst | Crystal slime | 450 (360) | yes |
 | Diamond | Crystal slime | 600 (495) | yes |
 
@@ -17,8 +17,8 @@ which is what makes the chain expensive:
 
 - Sapphire + **Lucky Slime** → Emerald
 - Emerald + **Garnet Slime** → Amethyst
-- Amethyst + **Gold Slime** → Diamond — Slime Rancher 2 has no gold slime, so the mod falls back to a
-  **Kookadoba** and says so in the log.
+- Amethyst + **Gold Slime** → Diamond — and if a save somehow has no gold slime, the mod falls back to
+  **Gilded Ginger** and says so in the log.
 
 Every gem's favourite food is the mint mango, as in the original mod.
 
@@ -52,7 +52,12 @@ Built on the repo's own [SR2Kit](../../Shared/README.md) helpers, compiled strai
   130-line method per gem.
 - Appearances are rebuilt rather than edited: cloning a `SlimeAppearance` still points at the vanilla
   materials, so tinting in place would repaint the slime the gem was cut from. The crystal gems also
-  get their own tinted copies of the crystal spike prefabs.
+  get their own tinted copies of the crystal spike prefabs, and `CrystalSlimeLaunch` is pointed at
+  them — the spikes are held by the launcher, not read from the appearance, so a clone would
+  otherwise throw crystal-slime blue.
+- Growth meals are resolved in a prefix on `SlimeEat.FinishChomp`: an eat map entry naming
+  `BecomesIdent` is not enough, because the game only takes its transformation branch for meals it
+  treats as largo material and sends a swallowed slime to `EatAndProduce` instead.
 - `ShatterOnTouch` is an injected `MonoBehaviour` that breaks a crystal gem into its plort when the
   player walks into it. SR1 implemented the game's `ControllerCollisionListener` interface; Il2CppInterop
   emits SR2's version as a class, which an injected behaviour cannot implement, so the component polls

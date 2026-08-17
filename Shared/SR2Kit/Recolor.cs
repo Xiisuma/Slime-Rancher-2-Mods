@@ -51,6 +51,9 @@ public static class Recolor
         if (material.HasProperty("_Color")) material.SetColor("_Color", middle);
 
         if (!glossy) return;
+        // The game's slime shaders spell it "_SpecularColor"; "_SpecColor" is Unity's own name, kept
+        // for the few materials that are not one of theirs.
+        if (material.HasProperty("_SpecularColor")) material.SetColor("_SpecularColor", top);
         if (material.HasProperty("_SpecColor")) material.SetColor("_SpecColor", top);
         if (material.HasProperty("_Shininess")) material.SetFloat("_Shininess", 1f);
         if (material.HasProperty("_Gloss")) material.SetFloat("_Gloss", 1f);

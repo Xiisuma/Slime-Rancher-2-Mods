@@ -16,7 +16,8 @@ namespace GemSlimes;
 ///
 /// Five gem slimes and their plorts. Garnets and sapphires are found in the wild; the other three
 /// are grown from them by feeding, each step worth more than the last. The three cut from the
-/// crystal slime shatter into their plort when the player walks into them.
+/// crystal slime shatter into their plort when the player walks into them, and throw spikes in
+/// their own colour; the sapphire and the emerald are cut from the rock slime instead.
 /// </summary>
 public class Main : MelonMod
 {
@@ -28,7 +29,7 @@ public class Main : MelonMod
     // so it gets its own, priced below the sapphire to keep the chain's ramp intact.
     private static readonly Gem Garnet = new("Garnet", "Garnet Slime", "crystal", true, 90, 70f, "FF000B", "FF003D");
     private static readonly Gem Sapphire = new("Sapphire", "Sapphire Slime", "rock", false, 125, 80f, "1504C1", "2536AC");
-    private static readonly Gem Emerald = new("Emerald", "Emerald Slime", "pink", false, 300, 215f, "169E36", "1D953C");
+    private static readonly Gem Emerald = new("Emerald", "Emerald Slime", "rock", false, 300, 215f, "169E36", "1D953C");
     private static readonly Gem Amethyst = new("Amethyst", "Amethyst Slime", "crystal", true, 450, 360f, "7F006E", "7F0092");
     private static readonly Gem Diamond = new("Diamond", "Diamond Slime", "crystal", true, 600, 495f, "6DD6EE", "00A2FF");
 

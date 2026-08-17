@@ -1,11 +1,11 @@
 # Modded Assets (Slime Rancher 2)
 
-Gives the ported mods their original Slime Rancher 1 artwork back.
+Gives the ported mods icons of their own.
 
 Every ported mod builds its content by cloning a vanilla asset, so a modded slime or plort wears the
 icon of whatever it was cloned from — bubble plorts look like pink plorts in the vacpack, the market
-and the silos. The SR1 mods shipped their own icons inside their DLLs. This mod carries those files
-and hands them to whichever ported mod is installed.
+and the silos. This mod carries a picture for each modded type and hands it to whichever ported mod
+is installed.
 
 It is one-way on purpose: **no ported mod references this one.** Install it and the icons appear;
 leave it out and every mod still works with vanilla icons.
@@ -21,14 +21,15 @@ leave it out and every mod still works with vanilla icons.
 |---|---|
 | BubbleSlimes | slime + plort icons |
 | LuckyPlorts | plort icon |
-| GemSlimes | 5 slime + 4 plort icons |
+| GemSlimes | 5 slime + 5 plort icons |
+| TwinkleSlime | 2 slime + 2 plort icons |
 
 ## How the artwork gets in
 
-The SR1 mods shipped their icons two ways: BubbleSlimes as plain PNG files, GemSlimes and LuckyPlorts
-inside Unity asset bundles built for Slime Rancher 1 — which Slime Rancher 2's Unity refuses to open
-at runtime. Those bundles were therefore unpacked **offline** (with UnityPy) and their sprites stored
-next to the PNGs.
+The icons are the set in `assets/`, drawn for this repo. They replaced the Slime Rancher 1 originals,
+which came two ways: BubbleSlimes as plain PNG files, GemSlimes and LuckyPlorts inside Unity asset
+bundles built for Slime Rancher 1 — which Slime Rancher 2's Unity refuses to open at runtime, so they
+were unpacked **offline** with UnityPy. The `.bundle` files are still in `assets/` as the originals.
 
 Everything is embedded as raw RGBA32 (`.rgba`: width, height, then the rows bottom-up), because
 `ImageConversion.LoadImage` takes an `Il2CppSystem.ReadOnlySpan` that Il2CppInterop cannot marshal —
