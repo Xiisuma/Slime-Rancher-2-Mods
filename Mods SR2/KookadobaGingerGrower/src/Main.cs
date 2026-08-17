@@ -34,6 +34,7 @@ public class Main : MelonMod
             Setup();
             GingerPatches.Reset();
             GingerPatches.List();
+            WildGinger.Reset();
         });
 
         LoggerInstance.Msg("Kookadoba Ginger Grower loaded.");

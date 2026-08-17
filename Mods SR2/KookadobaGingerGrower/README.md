@@ -5,6 +5,9 @@ Port of the Slime Rancher 1 mod **KookadobaGingerGrower** by MegaPiggy.
 **Gilded Ginger becomes a garden crop.** Drop one into a garden and it grows like any other veggie,
 deluxe garden included — no more hunting the wild ginger patches every time.
 
+It also **comes up in the wild**, among the carrots, beets and parsnips of the open veggie patches,
+and the **gold slime favours it** while still eating everything else.
+
 ## Install
 
 1. Install [MelonLoader](https://melonwiki.xyz/) 0.7.x for Slime Rancher 2 and run the game once.
@@ -34,6 +37,13 @@ Built on the repo's own [SR2Kit](../../Shared/README.md) helpers, compiled strai
   with the ginger model, the same trick the SR1 mod used.
 - Gardens instantiated before the crop existed resolve what they accept in `Awake`, so a Harmony
   postfix on `GardenCatcher.Awake` injects the crop into those too.
+- Wild ginger joins the veggie patches that already grow in the open: their beds pick what to spawn
+  from a weighted table, and a Harmony postfix on `SpawnResource.Start` points each wild bed at a
+  copy of its table with ginger added, worth 8% of it. The copies are what keeps gardens clean — the
+  grower definitions are shared assets, so editing the originals would sow ginger in every plot too.
+  Fruit trees and anything inside a plot are skipped.
+- The gold slime gets ginger in its `FavoriteIdents` (and its food list, since a favourite outside a
+  slime's food groups is never bitten). Its groups are untouched, so it still eats everything.
 - **Saving works**: a plot stores what is planted in it as an index into a table of grower reference
   ids (`LandPlotV02.ResourceGrowerId`), built once from the game's grower list. The mod adds its two
   definitions to that list and to both directions of the save translation — the reverse index used
