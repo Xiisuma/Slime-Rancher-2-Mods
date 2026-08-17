@@ -162,18 +162,26 @@ public sealed class Gem
             if (existing != null && existing.BecomesIdent == into.Definition) return;
         }
 
-        diet.EatMap.Add(new SlimeDiet.EatMapEntry
+        // No produce on a transformation entry: a meal that yields plorts yields plorts, and the
+        // slime stays what it was. The original mod's growth entries name only what to eat and what
+        // to become.
+        SlimeDiet.EatMapEntry growth = new()
         {
             EatsIdent = food,
             BecomesIdent = into.Definition,
-            ProducesIdent = Plort,
+            ProducesIdent = null,
             IsFavorite = true,
-            ProductionCount = 1,
-            FavoriteProductionCount = 1,
+            ProductionCount = 0,
+            FavoriteProductionCount = 0,
             Driver = SlimeEmotions.Emotion.HUNGER,
             ExtraDrive = 1f,
             MinDrive = 0f
-        });
+        };
+        diet.EatMap.Add(growth);
+
+        // The entry alone is not enough: the game decides between transforming and producing on its
+        // own terms, and a whole slime is not one of the meals it transforms on. See Transformations.
+        Transformations.Register(Definition, food, growth);
 
         // The eat map only says what a meal turns into. What a slime is willing to bite comes from
         // its food lists, so the prey has to be named there too or the gem simply ignores it.
