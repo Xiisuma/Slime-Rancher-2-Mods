@@ -1,7 +1,7 @@
 using MelonLoader;
 using MoreCorralUpgrades;
 
-[assembly: MelonInfo(typeof(MoreCorralUpgrades.Main), "MoreCorralUpgrades", "1.0.0", "Xiisuma", null)]
+[assembly: MelonInfo(typeof(MoreCorralUpgrades.Main), "MoreCorralUpgrades", "1.0.0", "Aidanamite", null)]
 [assembly: MelonGame("MonomiPark", "SlimeRancher2")]
 
 namespace MoreCorralUpgrades;

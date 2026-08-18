@@ -5,7 +5,7 @@ using ModdedAssets;
 using SR2Kit;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(ModdedAssets.Main), "Modded Assets SR2", "1.0.0", "Xiisuma")]
+[assembly: MelonInfo(typeof(ModdedAssets.Main), "Modded Assets SR2", "1.0.0", "Xiu_ma, PikaCat, Claude")]
 [assembly: MelonGame("MonomiPark", "SlimeRancher2")]
 
 namespace ModdedAssets;

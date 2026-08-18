@@ -74,7 +74,7 @@ dotnet build "Source/GemSlimes/GemSlimesSR2.csproj" -c Release
 
 ## Credits
 
-Original Slime Rancher 1 mod: **GemSlimes**, by **Baz**. The mod itself is kept in
+Original Slime Rancher 1 mod: **GemSlimes**, by **Bazzzzzzzzzzzzzzzzzzzz**. The mod itself is kept in
 [`Mods SR1/GemSlimes`](../../Mods%20SR1/GemSlimes) for reference, and credit for it stays with its author.
 
 Slime Rancher 2 adaptation by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).

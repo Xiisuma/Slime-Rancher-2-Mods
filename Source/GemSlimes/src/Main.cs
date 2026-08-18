@@ -5,7 +5,7 @@ using MelonLoader;
 using SR2Kit;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(GemSlimes.Main), "Gem Slimes SR2", "1.5.0", "Baz")]
+[assembly: MelonInfo(typeof(GemSlimes.Main), "Gem Slimes SR2", "1.5.0", "Bazzzzzzzzzzzzzzzzzzzz")]
 [assembly: MelonGame("MonomiPark", "SlimeRancher2")]
 
 namespace GemSlimes;

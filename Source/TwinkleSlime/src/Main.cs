@@ -6,7 +6,7 @@ using SR2Kit;
 using TwinkleSlime;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(TwinkleSlime.Main), "Twinkle Slime SR2", "1.0.0", "Xiisuma")]
+[assembly: MelonInfo(typeof(TwinkleSlime.Main), "Twinkle Slime SR2", "1.0.0", "MegaPiggy")]
 [assembly: MelonGame("MonomiPark", "SlimeRancher2")]
 
 namespace TwinkleSlime;

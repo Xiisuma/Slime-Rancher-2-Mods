@@ -6,7 +6,7 @@ using MelonLoader;
 using SR2Kit;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(BubbleSlimes.Main), "Bubble Slimes SR2", "1.0.0", "Xiisuma")]
+[assembly: MelonInfo(typeof(BubbleSlimes.Main), "Bubble Slimes SR2", "1.0.0", "Bazzzzzzzzzzzzzzzzzzzz")]
 [assembly: MelonGame("MonomiPark", "SlimeRancher2")]
 
 namespace BubbleSlimes;

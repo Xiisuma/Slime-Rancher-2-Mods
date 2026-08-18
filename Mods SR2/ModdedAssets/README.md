@@ -68,4 +68,6 @@ with open("icon.rgba", "wb") as f:
 ## Credits
 
 Not a port: this companion mod was written by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic) to serve
-the Slime Rancher 1 mods adapted alongside it.
+the Slime Rancher 1 mods adapted alongside it. It stands where **AssetsLib** by **Aidanamite** stood in
+Slime Rancher 1 — that library is kept in [`Mods SR1/AssetsLib`](../../Mods%20SR1/AssetsLib) for
+reference, but nothing here is derived from it.

@@ -7,7 +7,7 @@ using MelonLoader;
 using SR2Kit;
 using UnityEngine.InputSystem;
 
-[assembly: MelonInfo(typeof(DevGive.Main), "Dev Give SR2", "1.0.0", "Xiisuma")]
+[assembly: MelonInfo(typeof(DevGive.Main), "Dev Give SR2", "1.0.0", "Xiu_ma, PikaCat, Claude")]
 [assembly: MelonGame("MonomiPark", "SlimeRancher2")]
 
 namespace DevGive;
