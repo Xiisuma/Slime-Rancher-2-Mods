@@ -20,9 +20,34 @@ references it: without the multiplayer mod, the patcher says so in the log and s
 
 | Problem | What the patcher does |
 |---|---|
+| Market prices land on the wrong plorts | Packs and unpacks the price update in reference-id order instead of by hash-table position |
 | A modded slime or plort cannot be described in a packet | Gives every modded identifiable type a persistence id, in reference-id order, so both machines compute the same one |
 | Ranching Together built its actor table before a content mod registered | Rebuilds that table once the save is running |
+| A weather update that fails to apply says nothing | Writes down what the packet carried, so the entry that breaks it can be named |
 | Slimes and resources hanging in mid-air once players walk away from each other | Hands an actor whose owner has gone silent to a player who can still see it |
+
+## The market board
+
+Ranching Together sends the board as a bare array of `(current, previous)` pairs and applies it by
+position, walking the host's `PlortEconomyDirector._currValueMap` and the client's in parallel:
+
+```csharp
+foreach (var item in plortEconomyDirector._currValueMap._entries)   // SR2MP 0.3.8, MarketPriceHandler
+{
+    if (item.value != null)
+        (item.value.CurrValue, item.value.PrevValue) = packet.Prices[num];
+    num++;
+}
+```
+
+Nothing in the packet says which plort a price is for. That map is a hash table, and a modded plort
+is inserted into it at load time, so the two machines lay their tables out differently — both boards
+then show the same numbers on different plorts.
+
+The patcher keeps the wire format and changes the order both sides read it in: sorted by reference
+id, which is the same sequence on every machine running the same mods. A length mismatch means the
+other side is not running the same set, and the update is dropped with a line in the log rather than
+applied to the wrong plorts.
 
 ## The floating actors
 

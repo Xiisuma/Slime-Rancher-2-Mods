@@ -49,6 +49,8 @@ public class Main : MelonMod
             Log.Msg($"Ranching Together found (v{SR2MPBridge.Version}).");
             OwnershipWatchdog.Claiming = claim.Value;
             OwnershipWatchdog.Install(HarmonyInstance);
+            WeatherGuard.Install(HarmonyInstance);
+            MarketPriceSync.Install(HarmonyInstance);
         }
         else
         {
