@@ -32,8 +32,8 @@ plorts come out of a single meal.
 
 ## Build
 
-Source lives in [`Source/LuckyPlorts`](../../Source/LuckyPlorts). Fill the shared
-[`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source lives in [`Source/LuckyPlorts`](../../Source/LuckyPlorts). Point the build at a Slime Rancher 2 install
+with MelonLoader on it — `SR2_PATH`, or `-p:GamePath="…\Slime Rancher 2"` — then:
 
 ```bash
 dotnet build "Source/LuckyPlorts/LuckyPlortsSR2.csproj" -c Release

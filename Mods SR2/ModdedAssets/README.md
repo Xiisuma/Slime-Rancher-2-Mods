@@ -43,8 +43,9 @@ Seventeen in all. The log reports the split, for example `Applied 13 icons, rend
 
 ## Build
 
-Source and artwork live in [`Source/ModdedAssets`](../../Source/ModdedAssets). Fill the shared
-[`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source and artwork live in [`Source/ModdedAssets`](../../Source/ModdedAssets). Point the build at a
+Slime Rancher 2 install with MelonLoader on it — `SR2_PATH`, or `-p:GamePath="…\Slime Rancher 2"` —
+then:
 
 ```bash
 dotnet build "Source/ModdedAssets/ModdedAssetsSR2.csproj" -c Release

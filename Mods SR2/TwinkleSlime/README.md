@@ -42,8 +42,8 @@ has no equivalent for. Their bundles are left in the SR1 mod.
 
 ## Build
 
-Source lives in [`Source/TwinkleSlime`](../../Source/TwinkleSlime). Fill the shared
-[`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source lives in [`Source/TwinkleSlime`](../../Source/TwinkleSlime). Point the build at a Slime Rancher 2 install
+with MelonLoader on it — `SR2_PATH`, or `-p:GamePath="…\Slime Rancher 2"` — then:
 
 ```bash
 dotnet build "Source/TwinkleSlime/TwinkleSlimeSR2.csproj" -c Release

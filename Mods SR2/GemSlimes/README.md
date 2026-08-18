@@ -64,8 +64,8 @@ own colour. Every gem's favourite food is the mint mango, as in the original mod
 
 ## Build
 
-Source lives in [`Source/GemSlimes`](../../Source/GemSlimes). Fill the shared
-[`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source lives in [`Source/GemSlimes`](../../Source/GemSlimes). Point the build at a Slime Rancher 2 install
+with MelonLoader on it — `SR2_PATH`, or `-p:GamePath="…\Slime Rancher 2"` — then:
 
 ```bash
 dotnet build "Source/GemSlimes/GemSlimesSR2.csproj" -c Release

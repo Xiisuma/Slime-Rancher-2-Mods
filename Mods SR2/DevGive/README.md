@@ -74,8 +74,8 @@ says so. Nothing is spawned in the world.
 
 ## Build
 
-Source lives in [`Source/DevGive`](../../Source/DevGive). Fill the shared
-[`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source lives in [`Source/DevGive`](../../Source/DevGive). Point the build at a Slime Rancher 2 install
+with MelonLoader on it — `SR2_PATH`, or `-p:GamePath="…\Slime Rancher 2"` — then:
 
 ```bash
 dotnet build "Source/DevGive/DevGiveSR2.csproj" -c Release

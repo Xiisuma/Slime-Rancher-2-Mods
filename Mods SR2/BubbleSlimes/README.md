@@ -36,8 +36,8 @@ It cannot be made into a largo — nothing holds.
 
 ## Build
 
-Source lives in [`Source/BubbleSlimes`](../../Source/BubbleSlimes). Fill the shared
-[`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source lives in [`Source/BubbleSlimes`](../../Source/BubbleSlimes). Point the build at a Slime Rancher 2 install
+with MelonLoader on it — `SR2_PATH`, or `-p:GamePath="…\Slime Rancher 2"` — then:
 
 ```bash
 dotnet build "Source/BubbleSlimes/BubbleSlimesSR2.csproj" -c Release

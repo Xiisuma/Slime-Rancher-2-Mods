@@ -15,15 +15,11 @@
   </PropertyGroup>
 
   <!--
-    References come from the shared Dependencies folder at the repo root (see its README for how to
-    fill it). If it is empty, the build falls back to a local Slime Rancher 2 install:
+    References are read straight out of a Slime Rancher 2 install with MelonLoader on it:
       dotnet build -p:GamePath="D:\Games\Slime Rancher 2"
-    or set the SR2_PATH environment variable.
+    or set the SR2_PATH environment variable once and forget about it.
   -->
   <PropertyGroup>
-    <DepDir>$(MSBuildThisFileDirectory)..\..\Dependencies</DepDir>
-    <UseDepDir Condition="Exists('$(DepDir)\Assembly-CSharp.dll')">true</UseDepDir>
-
     <GamePath Condition="'$(GamePath)' == '' AND '$(SR2_PATH)' != ''">$(SR2_PATH)</GamePath>
     <GamePath Condition="'$(GamePath)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Slime Rancher 2</GamePath>
     <Il2CppAssemblies>$(GamePath)\MelonLoader\Il2CppAssemblies</Il2CppAssemblies>
@@ -37,17 +33,11 @@
   </ItemGroup>
 
   <Target Name="CheckReferences" BeforeTargets="BeforeBuild">
-    <Error Condition="'$(UseDepDir)' != 'true' AND !Exists('$(Il2CppAssemblies)')"
-           Text="No references found. Fill '$(DepDir)' (see Dependencies/README.md) or set GamePath / SR2_PATH to a Slime Rancher 2 install with MelonLoader installed." />
+    <Error Condition="!Exists('$(Il2CppAssemblies)')"
+           Text="No references found at '$(Il2CppAssemblies)'. Set GamePath or SR2_PATH to a Slime Rancher 2 install with MelonLoader installed." />
   </Target>
 
-  <ItemGroup Condition="'$(UseDepDir)' == 'true'">
-    <Reference Include="$(DepDir)\*.dll">
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(UseDepDir)' != 'true'">
+  <ItemGroup>
     <Reference Include="$(Il2CppAssemblies)\*.dll">
       <Private>false</Private>
     </Reference>

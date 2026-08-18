@@ -85,8 +85,8 @@ Together's hand-back drops.
 
 ## Build
 
-Source lives in [`Source/MultiplayerModPatcher`](../../Source/MultiplayerModPatcher). Fill the shared
-[`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source lives in [`Source/MultiplayerModPatcher`](../../Source/MultiplayerModPatcher). Point the build at a Slime Rancher 2 install
+with MelonLoader on it — `SR2_PATH`, or `-p:GamePath="…\Slime Rancher 2"` — then:
 
 ```bash
 dotnet build "Source/MultiplayerModPatcher/MultiplayerModPatcher.csproj" -c Release

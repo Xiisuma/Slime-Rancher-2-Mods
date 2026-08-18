@@ -24,8 +24,8 @@ Three pond upgrades, sold from the plot shop and stored in the save like vanilla
 
 ## Build
 
-Source lives in [`Source/PondUpgrades`](../../Source/PondUpgrades). Fill the shared
-[`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source lives in [`Source/PondUpgrades`](../../Source/PondUpgrades). Point the build at a Slime Rancher 2 install
+with MelonLoader on it — `SR2_PATH`, or `-p:GamePath="…\Slime Rancher 2"` — then:
 
 ```bash
 dotnet build "Source/PondUpgrades/SlimePondUpgradesSR2.csproj" -c Release

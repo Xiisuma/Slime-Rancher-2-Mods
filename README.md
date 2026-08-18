@@ -49,19 +49,20 @@ how to configure it.
 Mods SR2/<Mod>/      the .dll to install, and what it does
 Source/<Mod>/        the code that builds it
 Shared/SR2Kit/       helper sources compiled into every mod
-Dependencies/        game and loader assemblies (git-ignored)
 ```
 
 ## Building
 
-Fill [`Dependencies/`](Dependencies/README.md), then build any project:
+The game's own assemblies are the references, so a build needs an install with
+[MelonLoader](https://melonwiki.xyz/) on it and nothing else. Set `SR2_PATH` to it once, then build
+any project:
 
 ```bash
 dotnet build "Source/GemSlimes/GemSlimesSR2.csproj" -c Release
 ```
 
-`-p:GamePath="…\Slime Rancher 2"` points at a local install and copies the result straight into its
-`Mods` folder; `-p:DeployToGame=false` skips that copy.
+`-p:GamePath="…\Slime Rancher 2"` overrides `SR2_PATH` for one build. Either way the result is copied
+straight into that install's `Mods` folder; `-p:DeployToGame=false` skips the copy.
 
 There is no shared framework DLL. [`Shared/SR2Kit`](Shared/README.md) is compiled **into** each mod,
 so every one stays a single drop-in file: MelonSRML, which the usual SR1-to-SR2 conversions rely on,

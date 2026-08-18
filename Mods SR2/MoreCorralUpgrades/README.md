@@ -27,8 +27,8 @@ across saves, and a bought upgrade shows its check mark straight away.
 
 ## Build
 
-Source lives in [`Source/MoreCorralUpgrades`](../../Source/MoreCorralUpgrades). Fill the shared
-[`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source lives in [`Source/MoreCorralUpgrades`](../../Source/MoreCorralUpgrades). Point the build at a Slime Rancher 2 install
+with MelonLoader on it — `SR2_PATH`, or `-p:GamePath="…\Slime Rancher 2"` — then:
 
 ```bash
 dotnet build "Source/MoreCorralUpgrades/MoreCorralUpgrades.csproj" -c Release
