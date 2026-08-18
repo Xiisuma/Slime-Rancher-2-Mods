@@ -1,36 +1,48 @@
-# Lucky Plorts (Slime Rancher 2)
+<h1 align="center">Lucky Plorts</h1>
 
-Port of the Slime Rancher 1 mod **Lucky Plorts** by DogeisCut.
+<p align="center">
+  <img src="img/plortLucky.png" width="110" alt="Lucky Plort">
+</p>
 
-Lucky Slimes now eat Stony Hens as a favourite food and produce a pale **Lucky Plort**, worth
-60 newbucks at the market.
+<p align="center">
+  <b>Lucky slimes leave something behind when they eat a stony hen.</b>
+</p>
+
+---
 
 ## Install
 
 1. Install [MelonLoader](https://melonwiki.xyz/) 0.7.x for Slime Rancher 2 and run the game once.
 2. Drop `LuckyPlortsSR2.dll` into the game's `Mods` folder.
 
-No modding framework required.
+Optional: [`ModdedAssets`](../ModdedAssets) gives the plort its icon.
+
+## What it adds
+
+Feed a **stony hen** to a lucky slime and it produces a **Lucky Plort**: pale stone, off-white on
+top, worth **60 newbucks** at the market. The hen becomes the lucky slime's favourite food, so two
+plorts come out of a single meal.
+
+## Notes
+
+- The plort is a clone of the pink plort's identifiable type, re-coloured through the kit so it gets
+  its own material copies — painting the inherited ones would turn every vanilla pink plort pale.
+- The market pays for it and destroys it like a vanilla plort; without the kit's cleanup a modded
+  plort stays lying in the machine, sellable again on the next touch.
 
 ## Build
 
-Fill the shared [`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source lives in [`Source/LuckyPlorts`](../../Source/LuckyPlorts). Fill the shared
+[`Dependencies/`](../../Dependencies/README.md) folder, then:
 
 ```bash
-dotnet build -c Release
+dotnet build "Source/LuckyPlorts/LuckyPlortsSR2.csproj" -c Release
 ```
 
-Falls back to a local install with `-p:GamePath="…\Slime Rancher 2"`; `-p:DeployToGame=false` skips
-the copy into `Mods`.
 
-## How the port works
+## Credits
 
-The previous SR2 conversion depended on **MelonSRML**, which no longer builds against the current
-game and MelonLoader. This version uses the repo's own [SR2Kit](../../Shared/README.md) helpers,
-compiled straight into the mod:
+Original Slime Rancher 1 mod: **LuckyPlorts**, by **DogeisCut**. The mod itself is kept in
+[`Mods SR1/LuckyPlorts`](../../Mods%20SR1/LuckyPlorts) for reference, and credit for it stays with its author.
 
-- The Lucky Plort is a clone of the pink plort's `IdentifiableType`, re-coloured off-white and registered
-  under the reference id `LuckyPlorts_PlortLucky` — which is what the save system stores, so the
-  plorts survive a reload.
-- The market price is registered on the `PlortEconomyDirector` and in the terminal's plort list.
-- The Lucky Slime's diet gets one extra entry: Stony Hen in, Lucky Plort out.
+Slime Rancher 2 adaptation by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).

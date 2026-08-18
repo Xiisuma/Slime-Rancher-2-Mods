@@ -1,50 +1,57 @@
-# Twinkle Slime (Slime Rancher 2)
+<h1 align="center">Twinkle Slime</h1>
 
-Port of the Slime Rancher 1 **Twinkle Slime** mod.
+<p align="center">
+  <img src="img/slimeTwinkle.png" width="100" alt="Twinkle Slime">
+  <img src="img/slimeLumina.png" width="100" alt="Lumina Slime">
+  <img src="img/plortTwinkle.png" width="76" alt="Twinkle Plort">
+  <img src="img/plortLumina.png" width="76" alt="Lumina Plort">
+</p>
 
-Adds two ranchable slimes and their plorts:
+<p align="center">
+  <b>A slime that took to the night sky, and its rarer cousin lit from the inside.</b>
+</p>
 
-| Content | Notes |
-|---|---|
-| Twinkle Slime | Pink/gold/blue palette, cannot become a largo. |
-| Twinkle Plort | 45 newbucks. |
-| Lumina Slime | Purple variant of the Twinkle Slime. |
-| Lumina Plort | 80 newbucks. |
-
-Each slime keeps the food of the slime it was cloned from, but every meal produces its own plort.
+---
 
 ## Install
 
 1. Install [MelonLoader](https://melonwiki.xyz/) 0.7.x for Slime Rancher 2 and run the game once.
 2. Drop `TwinkleSlimeSR2.dll` into the game's `Mods` folder.
 
-No modding framework required.
+Optional: [`ModdedAssets`](../ModdedAssets) carries the four icons.
 
-## Build
+## What it adds
 
-Fill the shared [`Dependencies/`](../../Dependencies/README.md) folder, then:
+| | Rarity | Plort |
+|---|---|---|
+| **Twinkle Slime** | 2% of a spawn set | Twinkle Plort — 45 newbucks |
+| **Lumina Slime** | 0.2% — the secret variant | Lumina Plort — 80 newbucks |
 
-```bash
-dotnet build -c Release
-```
+Both keep the pink slime's appetite and take the beach ball as their favourite toy.
 
-Falls back to a local install with `-p:GamePath="…\Slime Rancher 2"`; `-p:DeployToGame=false` skips
-the copy into `Mods`.
+## Notes
 
-## How the port works
-
-The previous SR2 conversion depended on **MelonSRML**, which no longer builds against the current
-game and MelonLoader. This version uses the repo's own [SR2Kit](../../Shared/README.md) helpers,
-compiled straight into the mod:
-
-- The plorts are clones of the pink plort's `IdentifiableType`, re-coloured and registered under
-  their own reference ids (`TwinkleSlime_PlortTwinkle`, `TwinkleSlime_PlortLumina`).
-- A `SlimeDefinition` is itself an `IdentifiableType`, so each slime is one cloned asset: it carries
-  the slime data and the identity, and is added to `SlimeDefinitions` so the game resolves it.
-- Reference ids are what the save system stores, so ranched slimes and their plorts survive a reload.
+- Shares of a spawn set rather than absolute weights: the vanilla sets do not agree on a scale, so
+  the same number is a rarity in one and the commonest slime in another.
+- Appearances are rebuilt rather than tinted in place, which is what keeps vanilla slimes vanilla.
 
 ## Not ported
 
-The SR1 mod also had a microphone toy, a Chime Changer gadget with 13 buyable instruments, and a
-date-based world spawner. Those need custom models and a gadget/terminal UI, and are left out.
-Twinkle Slimes are obtained from the vanilla ones or spawned with a console command.
+The microphone, jukebox and instruments of the original mod need a gadget terminal Slime Rancher 2
+has no equivalent for. Their bundles are left in the SR1 mod.
+
+## Build
+
+Source lives in [`Source/TwinkleSlime`](../../Source/TwinkleSlime). Fill the shared
+[`Dependencies/`](../../Dependencies/README.md) folder, then:
+
+```bash
+dotnet build "Source/TwinkleSlime/TwinkleSlimeSR2.csproj" -c Release
+```
+
+## Credits
+
+Original Slime Rancher 1 mod: **TwinkleSlime**, author unrecorded — the DLL carries no author metadata. The mod itself is kept in
+[`Mods SR1/TwinkleSlime`](../../Mods%20SR1/TwinkleSlime) for reference, and credit for it stays with its author.
+
+Slime Rancher 2 adaptation by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).

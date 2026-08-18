@@ -1,60 +1,57 @@
-# Modded Assets (Slime Rancher 2)
+<h1 align="center">Modded Assets</h1>
 
-Gives the ported mods icons of their own.
+<p align="center">
+  <img src="img/slimeGarnet.png" width="84" alt="Garnet icon">
+  <img src="img/slimeBubble.png" width="84" alt="Bubble icon">
+  <img src="img/plortTwinkle.png" width="70" alt="Twinkle plort icon">
+</p>
 
-Every ported mod builds its content by cloning a vanilla asset, so a modded slime or plort wears the
-icon of whatever it was cloned from — bubble plorts look like pink plorts in the vacpack, the market
-and the silos. This mod carries a picture for each modded type and hands it to whichever ported mod
-is installed.
+<p align="center">
+  <b>Gives the ported mods icons of their own.</b>
+</p>
 
-It is one-way on purpose: **no ported mod references this one.** Install it and the icons appear;
-leave it out and every mod still works with vanilla icons.
+---
 
 ## Install
 
 1. Install [MelonLoader](https://melonwiki.xyz/) 0.7.x for Slime Rancher 2 and run the game once.
 2. Drop `ModdedAssetsSR2.dll` into the game's `Mods` folder, next to the ported mods.
 
+It is one-way on purpose: **no ported mod references this one.** Install it and the icons appear;
+leave it out and every mod still works with vanilla icons.
+
 ## What it covers
 
-| Mod | Assets |
+| Mod | Icons |
 |---|---|
-| BubbleSlimes | slime + plort icons |
-| LuckyPlorts | plort icon |
-| GemSlimes | 5 slime + 5 plort icons |
-| TwinkleSlime | 2 slime + 2 plort icons |
+| GemSlimes | 5 slimes + 5 plorts |
+| TwinkleSlime | 2 slimes + 2 plorts |
+| BubbleSlimes | slime + plort |
+| LuckyPlorts | plort |
 
-## How the artwork gets in
+Seventeen in all. The log reports the split, for example `Applied 13 icons, rendered 0` followed by
+`Applied 4 icons (0 modded types not registered yet)` — mods that load later are picked up on a retry.
 
-The icons are the set in `assets/`, drawn for this repo. They replaced the Slime Rancher 1 originals,
-which came two ways: BubbleSlimes as plain PNG files, GemSlimes and LuckyPlorts inside Unity asset
-bundles built for Slime Rancher 1 — which Slime Rancher 2's Unity refuses to open at runtime, so they
-were unpacked **offline** with UnityPy. The `.bundle` files are still in `assets/` as the originals.
+## Notes
 
-Everything is embedded as raw RGBA32 (`.rgba`: width, height, then the rows bottom-up), because
-`ImageConversion.LoadImage` takes an `Il2CppSystem.ReadOnlySpan` that Il2CppInterop cannot marshal —
-calling it throws at runtime. The `.png` files are kept alongside as the readable originals; only the
-`.rgba` ones are compiled into the DLL, downscaled to 256 pixels. At full size the raw pixels made
-the DLL 32 MB, and the UI never shows an icon larger than a slot.
-
-If an asset is ever missing or unreadable, the mod photographs the object instead: an isolated camera
-renders the prefab's meshes to a sprite, so a modded type never silently wears the icon of the vanilla
-one it was cloned from. `MelonLoader/Latest.log` reports the split, for example
-`Applied 12 icons, rendered 0`.
-
-The assets are extracted from the original SR1 mod DLLs, which are kept in this repo under
-[`Mods SR1/`](../../Mods%20SR1). Credit stays with their authors.
+- Icons are embedded as raw RGBA32 (`.rgba`: width, height, then rows bottom-up) at 256 pixels.
+  `ImageConversion.LoadImage` takes an `Il2CppSystem.ReadOnlySpan` that Il2CppInterop cannot marshal,
+  so PNGs are converted offline instead of decoded at runtime.
+- A `SlimeDefinition` reads its icon from its appearance, so the icon is written to both.
+- If an asset is ever unreadable the mod photographs the object with an isolated camera rather than
+  leave a modded type wearing the icon of the vanilla one it was cloned from.
 
 ## Build
 
-Fill the shared [`Dependencies/`](../../Dependencies/README.md) folder, then:
+Source and artwork live in [`Source/ModdedAssets`](../../Source/ModdedAssets). Fill the shared
+[`Dependencies/`](../../Dependencies/README.md) folder, then:
 
 ```bash
-dotnet build -c Release
+dotnet build "Source/ModdedAssets/ModdedAssetsSR2.csproj" -c Release
 ```
 
-`assets/*.rgba` and `assets/*.bundle` are embedded into the DLL at build time. To cover another mod,
-add its icon as `.rgba` and a line to the `Icons` table in `src/Main.cs`. To convert a PNG:
+To cover another mod, add its icon as `.rgba` under `assets/` and a line to the `Icons` table in
+`src/Main.cs`. Converting a PNG:
 
 ```python
 import struct
@@ -68,11 +65,7 @@ with open("icon.rgba", "wb") as f:
     f.write(flipped.tobytes())
 ```
 
-## Not covered
+## Credits
 
-- **Bubble Cherry model** — `assets/bubblecherry.bundle` holds the SR1 mesh, but the fruit itself was
-  not ported (see the BubbleSlimes README), so nothing consumes it yet.
-- **Twinkle Slime's microphone and jukebox bundles** (15 MB together) are left in the SR1 DLL: the
-  features that used them need a gadget terminal SR2 has no equivalent for.
-- **Pedia entries and shop listings** are not artwork — they resolve through Addressables asset
-  references, which a runtime-created asset cannot have.
+Not a port: this companion mod was written by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic) to serve
+the Slime Rancher 1 mods adapted alongside it.

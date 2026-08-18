@@ -1,60 +1,61 @@
-# Kookadoba Ginger Grower (Slime Rancher 2)
+<h1 align="center">Kookadoba Ginger Grower</h1>
 
-Port of the Slime Rancher 1 mod **KookadobaGingerGrower** by MegaPiggy.
+<p align="center">
+  <img src="img/ginger.png" width="110" alt="Gilded Ginger">
+</p>
 
-**Gilded Ginger becomes a garden crop.** Drop one into a garden and it grows like any other veggie,
-deluxe garden included — no more hunting the wild ginger patches every time.
+<p align="center">
+  <b>Gilded Ginger becomes a crop — plantable, carryable, and growing in the wild.</b>
+</p>
 
-It also **comes up in the wild**, among the carrots, beets and parsnips of the open veggie patches,
-and the **gold slime favours it** while still eating everything else.
+---
 
 ## Install
 
 1. Install [MelonLoader](https://melonwiki.xyz/) 0.7.x for Slime Rancher 2 and run the game once.
 2. Drop `KookadobaGingerGrowerSR2.dll` into the game's `Mods` folder.
 
-No modding framework required.
+## What it does
 
-## Build
+| | |
+|---|---|
+| **Plantable** | Drop a ginger into a garden and it grows like any other veggie, deluxe garden included. |
+| **Carryable** | Gilded Ginger belongs to no identifiable group in the base game, so the vacpack, the silos and the drones all refused it. It now joins the groups of an ordinary crop. |
+| **Wild** | It comes up among the pogo fruit, worth 2% of a tree's table. |
+| **Gold slime** | Ginger becomes its favourite food. Its diet is widened to fruit, veggies, meat and nectar, and it no longer eats plorts. |
 
-Fill the shared [`Dependencies/`](../../Dependencies/README.md) folder, then:
-
-```bash
-dotnet build -c Release
-```
-
-Falls back to a local install with `-p:GamePath="…\Slime Rancher 2"`; `-p:DeployToGame=false` skips
-the copy into `Mods`.
-
-## How the port works
-
-Built on the repo's own [SR2Kit](../../Shared/README.md) helpers, compiled straight into the mod
-(MelonSRML, which the usual SR1-to-SR2 conversions rely on, no longer builds against the current game):
+## Notes
 
 - A garden accepts a crop when its `GardenCatcher` lists a plant slot for it. The mod clones a
-  vanilla veggie patch — keeping the soil, joints, audio and growth logic — and swaps the
-  `ResourceGrowerDefinition` driving it for one that yields ginger. The bed's sprouts are re-skinned
-  with the ginger model, the same trick the SR1 mod used.
-- Gardens instantiated before the crop existed resolve what they accept in `Awake`, so a Harmony
-  postfix on `GardenCatcher.Awake` injects the crop into those too.
-- Wild ginger joins the veggie patches that already grow in the open: their beds pick what to spawn
-  from a weighted table, and a Harmony postfix on `SpawnResource.Start` points each wild bed at a
-  copy of its table with ginger added, worth 8% of it. The copies are what keeps gardens clean — the
-  grower definitions are shared assets, so editing the originals would sow ginger in every plot too.
-  Fruit trees and anything inside a plot are skipped.
-- The gold slime gets ginger in its `FavoriteIdents` (and its food list, since a favourite outside a
-  slime's food groups is never bitten). Its groups are untouched, so it still eats everything.
+  vanilla veggie patch — soil, joints, audio and growth logic kept — and swaps the
+  `ResourceGrowerDefinition` for one that yields ginger, then re-skins the sprouts with the ginger
+  model.
 - **Saving works**: a plot stores what is planted in it as an index into a table of grower reference
-  ids (`LandPlotV02.ResourceGrowerId`), built once from the game's grower list. The mod adds its two
-  definitions to that list and to both directions of the save translation — the reverse index used
-  when writing, and the reference-id lookup used when reading a save back. Without this, planting
-  ginger would break the save.
+  ids, and the mod adds its two definitions to both directions of that translation.
+- Wild patches are pointed at a *copy* of their grower definition. Those definitions are shared
+  assets, so editing the originals would sow ginger in every garden too.
+- A gold slime's bite at a plort is turned down in a prefix on `SlimeEat.MaybeChomp`: emptying the
+  diet's edible-plort group did not hold up in play.
 
 ## Not ported
 
-- **The kookadoba half of the mod.** Slime Rancher 1's Kookadoba does not exist in Slime Rancher 2 —
-  there is no kookadoba identifiable, patch node or model anywhere in the game's assemblies, only
-  `GingerPatchNode`. The mod keeps its original name for lineage, but only the ginger half has
-  something to grow here.
-- The SR1 mod also placed 9 bushes (normal garden) and 11 (deluxe) at hand-picked offsets. Here the
-  cloned vanilla patch keeps the garden's own layout, which is what makes it look native.
+Slime Rancher 1's **Kookadoba** does not exist in Slime Rancher 2 — no identifiable, no patch node,
+no model anywhere in the game's assemblies, only `GingerPatchNode`. The mod keeps its original name
+for lineage; only the ginger half has something to grow here.
+
+## Build
+
+Source lives in [`Source/KookadobaGingerGrower`](../../Source/KookadobaGingerGrower). Fill the shared
+[`Dependencies/`](../../Dependencies/README.md) folder, then:
+
+```bash
+dotnet build "Source/KookadobaGingerGrower/KookadobaGingerGrowerSR2.csproj" -c Release
+```
+
+
+## Credits
+
+Original Slime Rancher 1 mod: **KookadobaGingerGrower**, by **MegaPiggy**. The mod itself is kept in
+[`Mods SR1/KookadobaGingerGrower`](../../Mods%20SR1/KookadobaGingerGrower) for reference, and credit for it stays with its author.
+
+Slime Rancher 2 adaptation by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).
