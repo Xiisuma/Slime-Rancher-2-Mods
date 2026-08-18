@@ -51,6 +51,7 @@ public class Main : MelonMod
             OwnershipWatchdog.Install(HarmonyInstance);
             WeatherGuard.Install(HarmonyInstance);
             MarketPriceSync.Install(HarmonyInstance);
+            GardenSync.Install(HarmonyInstance);
         }
         else
         {

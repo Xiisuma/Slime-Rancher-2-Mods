@@ -20,6 +20,7 @@ references it: without the multiplayer mod, the patcher says so in the log and s
 
 | Problem | What the patcher does |
 |---|---|
+| A crop planted by the other player is remembered as the wrong patch, or not planted at all | Reads the grower definition off the patch that was actually planted instead of guessing it from a hash table |
 | Market prices land on the wrong plorts | Packs and unpacks the price update in reference-id order instead of by hash-table position |
 | A modded slime or plort cannot be described in a packet | Gives every modded identifiable type a persistence id, in reference-id order, so both machines compute the same one |
 | Ranching Together built its actor table before a content mod registered | Rebuilds that table once the save is running |
@@ -48,6 +49,27 @@ The patcher keeps the wire format and changes the order both sides read it in: s
 id, which is the same sequence on every machine running the same mods. A length mismatch means the
 other side is not running the same set, and the update is dropped with a line in the log rather than
 applied to the wrong plorts.
+
+## The gardens
+
+Ranching Together works out what a plot is growing by scanning the raw storage behind the game's
+grower translation and taking the first entry whose primary resource is the crop:
+
+```csharp
+landPlotModel.resourceGrowerDefinition = translation._resourceGrowerTranslation
+    .RawLookupDictionary._entries
+    .FirstOrDefault(x => x.value._primaryResourceType == actor).value;   // SR2MP 0.3.8
+```
+
+Every crop has two definitions — the normal patch and the deluxe one — and which comes first is
+whatever order the hash table stores them in, so a plot can end up remembering the wrong one. And
+`_entries` is the raw array behind the dictionary: the slots past the last insertion hold no value,
+so a crop with no matching definition — a modded one the other player has and this game does not —
+walks into them and throws, which costs the whole update rather than the grower alone.
+
+The patcher plants the crop first and reads the definition back off the patch that was planted,
+which is the game's own answer and needs no guess about deluxe. A plot too far away to be loaded
+falls back to a lookup that picks by patch prefab rather than by hash order.
 
 ## The floating actors
 
@@ -94,6 +116,7 @@ Together's hand-back drops.
 ```
 [Multiplayer_Mod_Patcher] Ranching Together found (v0.3.8.0).
 [Multiplayer_Mod_Patcher] Watchdog installed on Ranching Together's actors.
+[Multiplayer_Mod_Patcher] Gardens keep the grower definition the crop actually grows from.
 [Multiplayer_Mod_Patcher] Ranching Together actor table refreshed: 0 types added, 770 known.
 [Multiplayer_Mod_Patcher] Watchdog: 3 actors left without a live owner, 3 claimed back.
 ```
