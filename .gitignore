@@ -7,3 +7,7 @@ obj/
 # third-party mods kept locally for reference, not redistributed here
 Mods SR1/
 Reference/
+
+# testing harness, kept locally only
+Mods SR2/DevGive/
+Source/DevGive/
