@@ -8,12 +8,8 @@ using UnityEngine;
 namespace ModdedAssets;
 
 /// <summary>
-/// Loads the artwork embedded in this mod.
-///
-/// Two formats live side by side, because that is how the Slime Rancher 1 mods shipped them: plain
-/// PNG files, and Unity asset bundles built by the original authors. PNGs always work. Bundles were
-/// built with Slime Rancher 1's Unity version and may be rejected by Slime Rancher 2's — when that
-/// happens the mod says so and moves on instead of failing silently.
+/// Loads the artwork embedded in this mod: raw RGBA32 pixels converted from PNG when the icon is
+/// added, since <c>ImageConversion.LoadImage</c> cannot be called from Il2Cpp interop.
 /// </summary>
 public static class AssetLibrary
 {
@@ -21,13 +17,11 @@ public static class AssetLibrary
     private const int HeaderSize = 8;
 
     private static readonly Assembly Self = Assembly.GetExecutingAssembly();
-    /// <summary>Bundle buffers kept alive for as long as the bundles read from them.</summary>
-    private static readonly List<Il2CppStructArray<byte>> Pinned = new();
 
     private static readonly Dictionary<string, Sprite> Cache = new();
     private static readonly HashSet<string> Rejected = new();
 
-    /// <summary>Loads a sprite by asset file name, for example "slimeBubble.png".</summary>
+    /// <summary>Loads a sprite by asset file name, for example "slimeBubble.rgba".</summary>
     public static Sprite Load(string fileName)
     {
         if (Cache.TryGetValue(fileName, out Sprite cached)) return cached;
@@ -41,12 +35,10 @@ public static class AssetLibrary
             return null;
         }
 
-        Sprite sprite = fileName.EndsWith(".rgba", StringComparison.OrdinalIgnoreCase)
-            ? FromRawPixels(bytes)
-            : FromBundle(fileName, bytes);
-
+        Sprite sprite = FromRawPixels(bytes);
         if (sprite == null)
         {
+            Main.Log.Warning($"Asset {fileName} could not be read as raw pixels.");
             Rejected.Add(fileName);
             return null;
         }
@@ -102,43 +94,5 @@ public static class AssetLibrary
         texture.Apply(false, false);
 
         return Sprite.Create(texture, new Rect(0f, 0f, width, height), new Vector2(0.5f, 0.5f));
-    }
-
-    /// <summary>Pulls the first sprite (or texture) out of a Slime Rancher 1 asset bundle.</summary>
-    private static Sprite FromBundle(string fileName, byte[] bytes)
-    {
-        AssetBundle bundle;
-        try
-        {
-            // The array has to outlive the call: a temporary is collected in the Il2Cpp domain while
-            // the bundle is still reading from it, which surfaces as a garbage-collection error.
-            Il2CppStructArray<byte> pinned = new(bytes);
-            Pinned.Add(pinned);
-            bundle = AssetBundle.LoadFromMemory(pinned);
-        }
-        catch (Exception e)
-        {
-            Main.Log.Warning($"{fileName} is a Slime Rancher 1 asset bundle this Unity version refuses to open ({e.Message}).");
-            return null;
-        }
-
-        if (bundle == null)
-        {
-            Main.Log.Warning($"{fileName} is a Slime Rancher 1 asset bundle this Unity version refuses to open.");
-            return null;
-        }
-
-        foreach (UnityEngine.Object asset in bundle.LoadAllAssets())
-        {
-            Sprite sprite = asset.TryCast<Sprite>();
-            if (sprite != null) return sprite;
-
-            Texture2D texture = asset.TryCast<Texture2D>();
-            if (texture == null) continue;
-            return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-        }
-
-        Main.Log.Warning($"{fileName} opened but holds no sprite or texture.");
-        return null;
     }
 }

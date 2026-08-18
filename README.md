@@ -42,8 +42,6 @@ Mods SR2/<Mod>/      the .dll to install, and what it does
 Source/<Mod>/        the code that builds it
 Shared/SR2Kit/       helper sources compiled into every mod
 Dependencies/        game and loader assemblies (git-ignored)
-Mods SR1/            the original Slime Rancher 1 mods, for reference
-Reference/           third-party Slime Rancher 2 mods used while testing
 ```
 
 ## Building

@@ -33,7 +33,6 @@
   <ItemGroup>
     <Compile Include="src\**\*.cs" />
     <EmbeddedResource Include="assets\**\*.rgba" />
-    <EmbeddedResource Include="assets\**\*.bundle" />
     <Compile Include="..\..\Shared\SR2Kit\**\*.cs" LinkBase="SR2Kit" />
   </ItemGroup>
 

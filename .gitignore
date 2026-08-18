@@ -3,3 +3,7 @@ obj/
 *.user
 .vs/
 .idea/
+
+# third-party mods kept locally for reference, not redistributed here
+Mods SR1/
+Reference/
