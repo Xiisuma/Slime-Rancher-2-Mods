@@ -49,6 +49,24 @@ Unity's old `KeyCode` ones.
 | Bubble slime | `BubbleSlimes_SlimeBubble` |
 | Twinkle slimes | `TwinkleSlime_SlimeTwinkle`, `TwinkleSlime_SlimeLumina` |
 
+## Driving the game from the settings file
+
+The rest of the section exists to make multiplayer testable without a second pair of hands: two
+copies of the game, started with different settings, end up in the same session without a click.
+
+```ini
+autoContinue = true            ; press Continue as soon as the menu can serve it
+autoHost = 7777                ; once in a save, host on this port (0 = off)
+autoConnect = "192.168.0.16:7777"  ; join instead of hosting (empty = off)
+disableAutosave = true         ; for the joining copy, which shares the host's save folder
+teleportOffset = "900,80,0"    ; the teleport key moves the player by this much
+teleportHotkey = "F8"
+quitHotkey = "F9"              ; closes the game cleanly; killing it can half-write an autosave
+```
+
+Ranching Together refuses a loopback address, so a second copy on the same machine joins through the
+machine's own LAN address.
+
 ## Limits
 
 The vacpack decides what it accepts: an item with no slot willing to take it is refused, and the log

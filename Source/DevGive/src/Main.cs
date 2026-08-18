@@ -25,6 +25,7 @@ public class Main : MelonMod
 
     private MelonPreferences_Entry<string> _items;
     private MelonPreferences_Entry<string> _hotkey;
+    private AutoSession _session;
 
     public static Main Instance { get; private set; }
     public static MelonLogger.Instance Log => Instance.LoggerInstance;
@@ -41,6 +42,8 @@ public class Main : MelonMod
         _hotkey = category.CreateEntry("hotkey", "F7",
             description: "Key that hands the items over. Names come from Unity's input system: " +
                          "F1..F12, digit1, numpad1, backquote...");
+
+        _session = new AutoSession(category);
 
         // Say at the main menu what the key is going to hand over, so a typo in the list is caught
         // before a save is loaded rather than on a silent key press.
@@ -63,6 +66,8 @@ public class Main : MelonMod
 
     public override void OnUpdate()
     {
+        _session.Update();
+
         if (!Pressed()) return;
 
         AmmoSlotManager ammo = Vacpack();
@@ -179,12 +184,14 @@ public class Main : MelonMod
     /// Reads the key from Unity's input system: Slime Rancher 2 ships without the legacy input
     /// manager, so <c>UnityEngine.Input</c> throws instead of answering.
     /// </summary>
-    private bool Pressed()
+    private bool Pressed() => Pressed(_hotkey.Value);
+
+    public static bool Pressed(string keyName)
     {
         Keyboard keyboard = Keyboard.current;
         if (keyboard == null) return false;
 
-        if (!Enum.TryParse(_hotkey.Value, ignoreCase: true, out Key key) || key == Key.None) return false;
+        if (!Enum.TryParse(keyName, ignoreCase: true, out Key key) || key == Key.None) return false;
         return keyboard[key].wasPressedThisFrame;
     }
 }

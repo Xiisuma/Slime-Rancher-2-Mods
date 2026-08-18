@@ -33,6 +33,7 @@ That is the whole install. Nothing else to copy, no framework underneath.
 | [More Corral Upgrades](Mods%20SR2/MoreCorralUpgrades) | Eight extra corral upgrades in the shop |
 | [Pond Upgrades](Mods%20SR2/PondUpgrades) | Three pond upgrades in the shop |
 | [Modded Assets](Mods%20SR2/ModdedAssets) | Icons for everything above — optional, one-way |
+| [Multiplayer Mod Patcher](Mods%20SR2/MultiplayerModPatcher) | Fixes Ranching Together's sync: modded content over the wire, and actors left hanging in mid-air |
 | [Dev Give](Mods%20SR2/DevGive) | Testing tool: hands named items to the vacpack on a key press |
 
 ## Repository
