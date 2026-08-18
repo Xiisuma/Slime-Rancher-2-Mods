@@ -36,6 +36,13 @@ That is the whole install. Nothing else to copy, no framework underneath.
 | [Multiplayer Mod Patcher](Mods%20SR2/MultiplayerModPatcher) | Fixes Ranching Together's sync: modded content over the wire, and actors left hanging in mid-air |
 | [Dev Give](Mods%20SR2/DevGive) | Testing tool: hands named items to the vacpack on a key press |
 
+## Download
+
+The [latest release](https://github.com/Xiisuma/Slime-Rancher-2-Mods/releases/latest) ships every mod
+in one archive: copy its `Mods` folder next to `SlimeRancher2.exe`, on top of the one
+[MelonLoader](https://melonwiki.xyz/) created. Each mod's own page below explains what it does and
+how to configure it.
+
 ## Repository
 
 ```
