@@ -65,6 +65,16 @@ no longer builds against the current game.
 
 Slime Rancher 2 adaptations by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).
 
-Each page names the Slime Rancher 1 mod it comes from and its original author; credit for the
-originals stays with them. The originals themselves are kept in [`Mods SR1/`](Mods%20SR1) for
-reference.
+Each page names the Slime Rancher 1 mod it comes from, links to its Nexus Mods page and names its
+original author; credit for the originals stays with them.
+
+| Slime Rancher 1 mod | Author | Adapted as |
+|---|---|---|
+| [Bubble Slimes](https://www.nexusmods.com/slimerancher/mods/100) | Bazzzzzzzzzzzzzzzzzzzz | [BubbleSlimes](Mods%20SR2/BubbleSlimes) |
+| [Gem Slimes](https://www.nexusmods.com/slimerancher/mods/104) | Bazzzzzzzzzzzzzzzzzzzz | [GemSlimes](Mods%20SR2/GemSlimes) |
+| [Growable Ginger and Kookadoba](https://www.nexusmods.com/slimerancher/mods/91) | MegaPiggy | [KookadobaGingerGrower](Mods%20SR2/KookadobaGingerGrower) |
+| [Lucky Slime Plorts](https://www.nexusmods.com/slimerancher/mods/65) | DogeisCut | [LuckyPlorts](Mods%20SR2/LuckyPlorts) |
+| [More Corral Upgrades](https://www.nexusmods.com/slimerancher/mods/292) | Aidanamite | [MoreCorralUpgrades](Mods%20SR2/MoreCorralUpgrades) |
+| [Pond Upgrades](https://www.nexusmods.com/slimerancher/mods/281) | Aidanamite | [PondUpgrades](Mods%20SR2/PondUpgrades) |
+| [Twinkle Slimes](https://www.nexusmods.com/slimerancher/mods/88) | MegaPiggy | [TwinkleSlime](Mods%20SR2/TwinkleSlime) |
+| [Assets Lib](https://www.nexusmods.com/slimerancher/mods/341) | Aidanamite | stood where [ModdedAssets](Mods%20SR2/ModdedAssets) stands, not derived from it |

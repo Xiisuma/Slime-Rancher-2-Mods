@@ -33,7 +33,7 @@ dotnet build "Source/PondUpgrades/SlimePondUpgradesSR2.csproj" -c Release
 
 ## Credits
 
-Original Slime Rancher 1 mod: **SlimePondUpgrades**, by **Aidanamite**. The mod itself is kept in
-[`Mods SR1/SlimePondUpgrades`](../../Mods%20SR1/SlimePondUpgrades) for reference, and credit for it stays with its author.
+Original Slime Rancher 1 mod: **[Pond Upgrades](https://www.nexusmods.com/slimerancher/mods/281)**, by **Aidanamite**.
+Credit for it stays with its author.
 
 Slime Rancher 2 adaptation by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).

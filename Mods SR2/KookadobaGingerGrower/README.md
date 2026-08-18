@@ -55,7 +55,7 @@ dotnet build "Source/KookadobaGingerGrower/KookadobaGingerGrowerSR2.csproj" -c R
 
 ## Credits
 
-Original Slime Rancher 1 mod: **KookadobaGingerGrower**, by **MegaPiggy**. The mod itself is kept in
-[`Mods SR1/KookadobaGingerGrower`](../../Mods%20SR1/KookadobaGingerGrower) for reference, and credit for it stays with its author.
+Original Slime Rancher 1 mod: **[Growable Ginger and Kookadoba](https://www.nexusmods.com/slimerancher/mods/91)**, by **MegaPiggy**.
+Credit for it stays with its author.
 
 Slime Rancher 2 adaptation by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).

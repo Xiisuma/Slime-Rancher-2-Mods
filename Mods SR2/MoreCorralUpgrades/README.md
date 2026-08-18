@@ -36,7 +36,7 @@ dotnet build "Source/MoreCorralUpgrades/MoreCorralUpgrades.csproj" -c Release
 
 ## Credits
 
-Original Slime Rancher 1 mod: **MoreCorralUpgrades**, by **Aidanamite**. The mod itself is kept in
-[`Mods SR1/MoreCorralUpgrades`](../../Mods%20SR1/MoreCorralUpgrades) for reference, and credit for it stays with its author.
+Original Slime Rancher 1 mod: **[More Corral Upgrades](https://www.nexusmods.com/slimerancher/mods/292)**, by **Aidanamite**.
+Credit for it stays with its author.
 
 Slime Rancher 2 adaptation by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).

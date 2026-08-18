@@ -51,7 +51,7 @@ dotnet build "Source/TwinkleSlime/TwinkleSlimeSR2.csproj" -c Release
 
 ## Credits
 
-Original Slime Rancher 1 mod: **TwinkleSlime**, by **MegaPiggy**. The mod itself is kept in
-[`Mods SR1/TwinkleSlime`](../../Mods%20SR1/TwinkleSlime) for reference, and credit for it stays with its author.
+Original Slime Rancher 1 mod: **[Twinkle Slimes](https://www.nexusmods.com/slimerancher/mods/88)**, by **MegaPiggy**.
+Credit for it stays with its author.
 
 Slime Rancher 2 adaptation by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).

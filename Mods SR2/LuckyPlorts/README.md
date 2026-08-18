@@ -42,7 +42,7 @@ dotnet build "Source/LuckyPlorts/LuckyPlortsSR2.csproj" -c Release
 
 ## Credits
 
-Original Slime Rancher 1 mod: **LuckyPlorts**, by **DogeisCut**. The mod itself is kept in
-[`Mods SR1/LuckyPlorts`](../../Mods%20SR1/LuckyPlorts) for reference, and credit for it stays with its author.
+Original Slime Rancher 1 mod: **[Lucky Slime Plorts](https://www.nexusmods.com/slimerancher/mods/65)**, by **DogeisCut**.
+Credit for it stays with its author.
 
 Slime Rancher 2 adaptation by **Xiu_ma**, **PikaCat** and **Claude** (Anthropic).
