@@ -1,23 +1,33 @@
 using Il2Cpp;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppMonomiPark.SlimeRancher.Slime;
+using HarmonyLib;
 using SR2Kit;
+using UnityEngine;
 
 namespace KookadobaGingerGrower;
 
 /// <summary>
 /// Feeds the gold slime.
 ///
-/// Left alone, a gold slime eats nothing at all: no food groups, no eat map, and the edible-plort
-/// group every diet carries. That group is the largo mechanic, and a gold slime has no largo to
-/// become — but it is the only thing its appetite could reach, so the first food handed to it came
-/// with a taste for plorts. It is given a proper diet here instead: fruit, veggies, meat and nectar,
-/// with Gilded Ginger as the favourite, and no plorts.
+/// Left alone it has no food groups and no eat map at all: it swallows whatever is thrown at it and
+/// produces from the diet's produce list, which is how the game gets a gold plort out of it. That
+/// emptiness is also why the only thing its appetite could reach was the edible-plort group every
+/// diet carries. It is given the groups of an ordinary slime here — fruit, veggies, meat, plus
+/// nectar and the ginger it favours — while its produce list is left exactly as the game wrote it.
+///
+/// Plorts are refused outright rather than by data: clearing the group was not enough in play, so
+/// <see cref="Patch_SlimeEat_MaybeChomp"/> turns the bite down before it starts.
 /// </summary>
 public static class GoldSlimeTaste
 {
-    /// <summary>Slime whose food groups and eat map the gold one borrows: it eats the ordinary lot.</summary>
+    /// <summary>Slime whose food groups the gold one borrows: it eats the ordinary lot.</summary>
     private const string DietModel = "pink";
+
+    /// <summary>Nectar and ginger are gathered resources, not members of a food group.</summary>
+    private const string Nectar = "nectar";
+
+    /// <summary>Reference id of the gold slime, for the bite that has to be refused.</summary>
+    internal static string GoldReferenceId { get; private set; }
 
     private static bool _done;
 
@@ -38,6 +48,7 @@ public static class GoldSlimeTaste
             return;
         }
         _done = true;
+        GoldReferenceId = gold.referenceId;
 
         SlimeDefinition model = Lookup.FindSlimeDefinition(definitions, "slime", DietModel);
         if (model?.Diet == null)
@@ -48,81 +59,73 @@ public static class GoldSlimeTaste
 
         SlimeDiet diet = gold.Diet;
 
-        IdentifiableTypeGroup veggies = VeggieGroup(model.Diet);
-        if (veggies == null)
-        {
-            Main.Log.Warning("No veggie group found; the gold slime is left as it was.");
-            return;
-        }
+        // Fruit, veggies and meat, the three groups the ordinary slime lives on.
+        diet.MajorFoodIdentifiableTypeGroups = model.Diet.MajorFoodIdentifiableTypeGroups;
 
-        // Vegetables, and nothing else.
-        Il2CppReferenceArray<IdentifiableTypeGroup> groups = new(1);
-        groups[0] = veggies;
-        diet.MajorFoodIdentifiableTypeGroups = groups;
+        // Its produce list is what turns a meal into a gold plort. Untouched.
+        // Its eat map stays empty, as the game wrote it: an empty map means every meal goes through
+        // the produce list instead of a per-food rule, which is the gold slime's whole trick.
 
-        // The groups say what may be bitten; the eat map is what turns a bite into a swallowed meal.
-        // Without it the gold slime chomped food and left it lying there. The model's map is copied
-        // rather than shared — writing into the entries would strip the model slime's own meals —
-        // keeping only the vegetables, and stripped of everything a meal produced or became: a gold
-        // slime eats, and that is all. The plort entries of that map are exactly what had it
-        // swallowing plorts.
-        diet.EatMap = Feed(model.Diet.EatMap, veggies);
-        diet.ProduceIdents = new Il2CppReferenceArray<IdentifiableType>(0);
-
-        // It cannot become a largo, so the group that lets a slime eat plorts has nothing left to do.
+        // It cannot become a largo, so the group that lets a slime eat plorts has nothing to do.
         diet.EdiblePlortIdentifiableTypeGroup = null;
-        diet.AdditionalFoodIdents = new Il2CppReferenceArray<IdentifiableType>(0);
-        diet.FavoriteIdents = new Il2CppReferenceArray<IdentifiableType>(0);
 
-        // Gilded Ginger is a gathered resource rather than a member of the veggie group, so it needs
-        // naming in the food lists and an entry of its own to be swallowed.
+        IdentifiableType nectar = Lookup.FindIdentifiable(Nectar);
+        if (nectar != null) diet.AdditionalFoodIdents = Diets.Append(diet.AdditionalFoodIdents, nectar);
         Diets.AddFavorite(gold, GingerCrop.Ginger);
-        diet.EatMap.Add(Meal(GingerCrop.Ginger, true));
 
-        Main.Log.Msg($"{gold.ReferenceId} eats vegetables only ({diet.EatMap.Count} of them), " +
-                     $"favours {GingerCrop.Ginger.name}, and leaves plorts alone.");
+        Main.Log.Msg($"{gold.ReferenceId} eats fruit, veggies, meat" +
+                     $"{(nectar == null ? string.Empty : ", " + nectar.name)} and " +
+                     $"{GingerCrop.Ginger.name}; produces {Names(diet.ProduceIdents)}; plorts refused.");
     }
 
-    /// <summary>The group of vegetables among the ones the model slime feeds on.</summary>
-    private static IdentifiableTypeGroup VeggieGroup(SlimeDiet model)
-    {
-        if (model.MajorFoodIdentifiableTypeGroups == null) return null;
+    /// <summary>Whether this slime is the gold one, by reference id rather than by asset.</summary>
+    internal static bool IsGold(SlimeDefinition slime)
+        => GoldReferenceId != null && slime != null && slime.referenceId == GoldReferenceId;
 
-        foreach (IdentifiableTypeGroup group in model.MajorFoodIdentifiableTypeGroups)
-        {
-            if (group != null && group.name.ToLowerInvariant().Contains("veggie")) return group;
-        }
-        return null;
+    private static string Names(Il2CppReferenceArray<IdentifiableType> list)
+    {
+        if (list == null || list.Length == 0) return "nothing";
+
+        string names = string.Empty;
+        foreach (IdentifiableType type in list) names += (type == null ? "null" : type.name) + " ";
+        return names.Trim();
     }
+}
 
-    /// <summary>Copies the vegetable meals of an eat map, keeping only what each entry eats.</summary>
-    private static Il2CppSystem.Collections.Generic.List<SlimeDiet.EatMapEntry> Feed(
-        Il2CppSystem.Collections.Generic.List<SlimeDiet.EatMapEntry> model, IdentifiableTypeGroup veggies)
+/// <summary>
+/// Turns down a gold slime's bite at a plort.
+///
+/// Emptying the diet's edible-plort group left plorts on the menu in play, so the refusal is made
+/// where the game asks the question instead: no chomp is started, and nothing else about the slime
+/// changes.
+/// </summary>
+[HarmonyPatch(typeof(SlimeEat), nameof(SlimeEat.MaybeChomp))]
+internal static class Patch_SlimeEat_MaybeChomp
+{
+    private static bool Prefix(SlimeEat __instance, GameObject obj, ref bool __result)
     {
-        Il2CppSystem.Collections.Generic.List<SlimeDiet.EatMapEntry> copy = new();
-        if (model == null) return copy;
+        if (obj == null || !GoldSlimeTaste.IsGold(__instance.SlimeDefinition)) return true;
 
-        foreach (SlimeDiet.EatMapEntry entry in model)
-        {
-            if (entry?.EatsIdent == null || entry.EatsIdent.IsPlort) continue;
-            if (!veggies.IsMember(entry.EatsIdent)) continue;
+        Identifiable identifiable = obj.GetComponentInParent<Identifiable>();
+        if (identifiable?.identType == null || !identifiable.identType.IsPlort) return true;
 
-            copy.Add(Meal(entry.EatsIdent, false));
-        }
-        return copy;
+        __result = false;
+        return false;
     }
+}
 
-    /// <summary>One meal that yields nothing: the food is swallowed and that is the end of it.</summary>
-    private static SlimeDiet.EatMapEntry Meal(IdentifiableType food, bool favorite) => new()
+/// <summary>The other door into a meal: a slime that spins before it bites.</summary>
+[HarmonyPatch(typeof(SlimeEat), nameof(SlimeEat.MaybeSpinAndChomp))]
+internal static class Patch_SlimeEat_MaybeSpinAndChomp
+{
+    private static bool Prefix(SlimeEat __instance, GameObject obj, ref bool __result)
     {
-        EatsIdent = food,
-        BecomesIdent = null,
-        ProducesIdent = null,
-        IsFavorite = favorite,
-        ProductionCount = 0,
-        FavoriteProductionCount = 0,
-        Driver = SlimeEmotions.Emotion.HUNGER,
-        ExtraDrive = favorite ? 1f : 0f,
-        MinDrive = 0f
-    };
+        if (obj == null || !GoldSlimeTaste.IsGold(__instance.SlimeDefinition)) return true;
+
+        Identifiable identifiable = obj.GetComponentInParent<Identifiable>();
+        if (identifiable?.identType == null || !identifiable.identType.IsPlort) return true;
+
+        __result = false;
+        return false;
+    }
 }
