@@ -1,5 +1,7 @@
+using System;
 using Il2Cpp;
 using MelonLoader;
+using UnityEngine.InputSystem;
 using SR2Kit;
 
 [assembly: MelonInfo(typeof(MultiplayerModPatcher.Main), "Multiplayer Mod Patcher", "1.0.0", "Xiu_ma, PikaCat, Claude")]
@@ -37,6 +39,9 @@ public class Main : MelonMod
         MelonPreferences_Entry<bool> claim = category.CreateEntry("claimAbandonedActors", true,
             description: "Hands an actor back to a player who can see it once its owner has gone " +
                          "silent. Off logs the same actors without touching them.");
+        _snapshotKey = category.CreateEntry("snapshotHotkey", "F10",
+            description: "Key that writes the network state of the actors around you to the log. " +
+                         "Press it while looking at something stuck in mid-air.");
 
         SR2MPBridge.Resolve();
         if (SR2MPBridge.Available)
@@ -55,7 +60,27 @@ public class Main : MelonMod
         Hooks.OnSceneContextReady(OnSceneReady);
     }
 
-    public override void OnUpdate() => OwnershipWatchdog.Report();
+    private static MelonPreferences_Entry<string> _snapshotKey;
+
+    public override void OnUpdate()
+    {
+        OwnershipWatchdog.Report();
+
+        if (_snapshotKey.Value.Length > 0 && Pressed(_snapshotKey.Value)) OwnershipWatchdog.Snapshot();
+    }
+
+    /// <summary>
+    /// Reads a key from Unity's input system: Slime Rancher 2 ships without the legacy input
+    /// manager, so <c>UnityEngine.Input</c> throws instead of answering.
+    /// </summary>
+    private static bool Pressed(string keyName)
+    {
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null) return false;
+
+        if (!Enum.TryParse(keyName, ignoreCase: true, out Key key) || key == Key.None) return false;
+        return keyboard[key].wasPressedThisFrame;
+    }
 
     private static void OnSceneReady(SceneContext _)
     {

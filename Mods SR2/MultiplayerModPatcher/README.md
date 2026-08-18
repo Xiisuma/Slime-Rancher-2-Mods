@@ -48,10 +48,23 @@ Ranching Together then unfreezes the rigidbody itself, on the ownership change i
 ```ini
 [MultiplayerModPatcher]
 claimAbandonedActors = true
+snapshotHotkey = "F10"
 ```
 
-`false` keeps the reporting and touches nothing, which is how to tell a fix from a coincidence: the
-log still counts what it would have claimed.
+`claimAbandonedActors = false` keeps the reporting and touches nothing, which is how to tell a fix
+from a coincidence: the log still counts what it would have claimed.
+
+The snapshot key writes the network state of the actors around you to the log. Press it while looking
+at something stuck in mid-air and the line that describes it says which part is stuck:
+
+```
+[Multiplayer_Mod_Patcher] Describing up to 25 networked actors:
+  owner=PLAYER_A670CE1E3 mine=False heard=False hibernating=n/a frozen=FreezeAll at=(461.0, 14.0, 341.2)
+```
+
+`mine=False heard=False frozen=FreezeAll` is the bug: an actor this game draws, frozen, whose owner
+has not been heard from. `hibernating=n/a` means the actor has no `RegionMember` — the case Ranching
+Together's hand-back drops.
 
 ```
 [Multiplayer_Mod_Patcher] Ranching Together found (v0.3.8.0).

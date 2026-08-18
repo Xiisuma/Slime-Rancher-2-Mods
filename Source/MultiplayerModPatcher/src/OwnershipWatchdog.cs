@@ -33,9 +33,14 @@ internal static class OwnershipWatchdog
     private static FieldInfo _regionMember;
     private static FieldInfo _hibernating;
 
+    private static FieldInfo _rigidbody;
+
     private static float _nextReport;
     private static int _seen;
     private static int _claimed;
+
+    /// <summary>Actors left to describe in the log while a snapshot is being taken.</summary>
+    private static int _snapshot;
 
     /// <summary>False turns the watchdog into a reporter, for telling a fix from a coincidence.</summary>
     public static bool Claiming { get; set; } = true;
@@ -66,6 +71,7 @@ internal static class OwnershipWatchdog
         }
 
         _hibernating = _regionMember.FieldType.GetField("_hibernating", SR2MPBridge.Any);
+        _rigidbody = networkActor.GetField("rigidbody", SR2MPBridge.Any);
 
         harmony.Patch(update, postfix: new HarmonyMethod(
             typeof(OwnershipWatchdog).GetMethod(nameof(AfterActorUpdate),
@@ -83,7 +89,11 @@ internal static class OwnershipWatchdog
     {
         try
         {
-            if (__instance == null || !Abandoned(__instance)) return;
+            if (__instance == null) return;
+
+            if (_snapshot > 0) Describe(__instance);
+
+            if (!Abandoned(__instance)) return;
 
             _seen++;
             if (Claiming && SR2MPBridge.Claim(__instance)) _claimed++;
@@ -112,6 +122,35 @@ internal static class OwnershipWatchdog
         if (region != null && _hibernating != null && _hibernating.GetValue(region) is true) return false;
 
         return true;
+    }
+
+    /// <summary>
+    /// Asks for the next few actors to describe themselves in the log.
+    ///
+    /// Meant for the moment a player is looking at something hanging in the air: one key press turns
+    /// what they see into the state that produced it, which is the only way to tell a stuck owner
+    /// from a stuck region or a frozen rigidbody nobody claimed.
+    /// </summary>
+    public static void Snapshot(int count = 25)
+    {
+        _snapshot = count;
+        Main.Log.Msg($"Describing up to {count} networked actors:");
+    }
+
+    private static void Describe(object actor)
+    {
+        _snapshot--;
+
+        object region = _regionMember.GetValue(actor);
+        object body = _rigidbody?.GetValue(actor);
+        string owner = _currentOwnerId.GetValue(actor) as string;
+
+        Main.Log.Msg($"  owner={(string.IsNullOrEmpty(owner) ? "none" : owner)} " +
+                     $"mine={_locallyOwned.GetValue(actor)} " +
+                     $"heard={_ownerRecentlyHeard.GetValue(actor)} " +
+                     $"hibernating={(region == null || _hibernating == null ? "n/a" : _hibernating.GetValue(region))} " +
+                     $"frozen={(body is Rigidbody rigidbody ? rigidbody.constraints.ToString() : "no body")} " +
+                     $"at={((MonoBehaviour)actor).transform.position}");
     }
 
     /// <summary>Logs what the watchdog has been doing, at most once every few seconds.</summary>
