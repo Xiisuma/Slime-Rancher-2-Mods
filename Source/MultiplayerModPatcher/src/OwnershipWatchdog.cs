@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
+using Il2Cpp;
 using UnityEngine;
 
 namespace MultiplayerModPatcher;
@@ -38,6 +41,9 @@ internal static class OwnershipWatchdog
     private static float _nextReport;
     private static int _seen;
     private static int _claimed;
+
+    /// <summary>What was claimed since the last report, so the log names it rather than counting it.</summary>
+    private static readonly Dictionary<string, int> Kinds = new();
 
     /// <summary>Actors left to describe in the log while a snapshot is being taken.</summary>
     private static int _snapshot;
@@ -96,6 +102,8 @@ internal static class OwnershipWatchdog
             if (!Abandoned(__instance)) return;
 
             _seen++;
+            Remember(__instance);
+
             if (Claiming && SR2MPBridge.Claim(__instance)) _claimed++;
         }
         catch
@@ -153,14 +161,26 @@ internal static class OwnershipWatchdog
                      $"at={((MonoBehaviour)actor).transform.position}");
     }
 
+    /// <summary>Notes what kind of thing an abandoned actor was, for the next report line.</summary>
+    private static void Remember(object actor)
+    {
+        Identifiable identifiable = ((MonoBehaviour)actor).GetComponent<Identifiable>();
+        string kind = identifiable?.identType == null ? "unknown" : identifiable.identType.name;
+
+        Kinds[kind] = Kinds.TryGetValue(kind, out int count) ? count + 1 : 1;
+    }
+
     /// <summary>Logs what the watchdog has been doing, at most once every few seconds.</summary>
     public static void Report()
     {
         if (_seen == 0 || Time.time < _nextReport) return;
 
         _nextReport = Time.time + ReportInterval;
-        Main.Log.Msg($"Watchdog: {_seen} actors left without a live owner, {_claimed} claimed back.");
+        Main.Log.Msg($"Watchdog: {_seen} actors left without a live owner, {_claimed} claimed back " +
+                     $"({string.Join(", ", Kinds.Select(kind => $"{kind.Value} x {kind.Key}"))}).");
+
         _seen = 0;
         _claimed = 0;
+        Kinds.Clear();
     }
 }
