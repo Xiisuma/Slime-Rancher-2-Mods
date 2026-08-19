@@ -76,6 +76,7 @@ public class Main : MelonMod
         {
             OwnershipWatchdog.Snapshot();
             WeatherPatternGuard.Snapshot();
+            MarketPriceSync.Snapshot();
         }
     }
 

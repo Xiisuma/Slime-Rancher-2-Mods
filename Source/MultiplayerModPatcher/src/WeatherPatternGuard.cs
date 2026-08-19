@@ -41,6 +41,9 @@ internal static class WeatherPatternGuard
 
     private static FieldInfo _lookupInitialized;
 
+    /// <summary>Zone and pattern pairs already named in the log.</summary>
+    private static readonly System.Collections.Generic.HashSet<string> Named = new();
+
     private static int _resolved;
     private static int _dropped;
     private static float _nextReport;
@@ -130,6 +133,7 @@ internal static class WeatherPatternGuard
                     WeatherModel.ForecastEntry entry = data.Forecast[i];
                     if (entry != null && entry.Pattern != null && Belongs(zone, entry.Pattern)) continue;
 
+                    Name(zone, entry);
                     data.Forecast.RemoveAt(i);
                     _dropped++;
                 }
@@ -141,6 +145,21 @@ internal static class WeatherPatternGuard
         }
 
         Report();
+    }
+
+    /// <summary>
+    /// Names a dropped entry the first time each zone and pattern pair comes up, so what is being
+    /// removed can be read rather than counted — a pattern the zone genuinely plays would be a
+    /// mistake to drop, and this is what tells the two apart.
+    /// </summary>
+    private static void Name(ZoneDefinition zone, WeatherModel.ForecastEntry entry)
+    {
+        string pattern = entry?.Pattern == null ? "<none>" : entry.Pattern.name;
+        string pair = $"{zone.name} / {pattern}";
+
+        if (!Named.Add(pair)) return;
+        Main.Log.Msg($"Weather: dropping {pair} from the forecast; that pattern is not in this zone's " +
+                     "configuration.");
     }
 
     /// <summary>The pattern this zone plays a state with, read from the configurations loaded now.</summary>
