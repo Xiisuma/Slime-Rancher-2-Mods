@@ -20,6 +20,9 @@ references it: without the multiplayer mod, the patcher says so in the log and s
 
 | Problem | What the patcher does |
 |---|---|
+| A crop planted by the other player is remembered as the wrong patch, or not planted at all | Reads the grower definition off the patch that was actually planted instead of guessing it from a hash table |
+| A zone's forecast is built from another zone's weather | Resolves the pattern from the zone's own configuration, and drops what still belongs elsewhere |
+| What a client sends is numbered by its own table, not the host's | Translates outgoing type ids through the table the host handed over on connection |
 | Market prices land on the wrong plorts | Packs and unpacks the price update in reference-id order instead of by hash-table position |
 | A modded slime or plort cannot be described in a packet | Gives every modded identifiable type a persistence id, in reference-id order, so both machines compute the same one |
 | Ranching Together built its actor table before a content mod registered | Rebuilds that table once the save is running |
@@ -48,6 +51,68 @@ The patcher keeps the wire format and changes the order both sides read it in: s
 id, which is the same sequence on every machine running the same mods. A length mismatch means the
 other side is not running the same set, and the update is dropped with a line in the log rather than
 applied to the wrong plorts.
+
+## The gardens
+
+Ranching Together works out what a plot is growing by scanning the raw storage behind the game's
+grower translation and taking the first entry whose primary resource is the crop:
+
+```csharp
+landPlotModel.resourceGrowerDefinition = translation._resourceGrowerTranslation
+    .RawLookupDictionary._entries
+    .FirstOrDefault(x => x.value._primaryResourceType == actor).value;   // SR2MP 0.3.8
+```
+
+Every crop has two definitions — the normal patch and the deluxe one — and which comes first is
+whatever order the hash table stores them in, so a plot can end up remembering the wrong one. And
+`_entries` is the raw array behind the dictionary: the slots past the last insertion hold no value,
+so a crop with no matching definition — a modded one the other player has and this game does not —
+walks into them and throws, which costs the whole update rather than the grower alone.
+
+The patcher plants the crop first and reads the definition back off the patch that was planted,
+which is the game's own answer and needs no guess about deluxe. A plot too far away to be loaded
+falls back to a lookup that picks by patch prefab rather than by hash order.
+
+## The weather
+
+Ranching Together maps a weather state to the pattern that plays it through a lookup built once,
+from whatever the zone configurations held at that moment. The state lists those patterns play are
+filled as zones come to life, so most of them are still empty when the snapshot is taken — and
+rather than say a state is unknown, the lookup falls back to any pattern with the same state name,
+which is always the one loaded first:
+
+```
+Using fallback pattern for Luminous Strand / Rain Light State: Rain Pattern Fields   # SR2MP 0.3.8
+```
+
+One evening of two-player ranching produced 2 177 of those lines. The forecasts they build name a
+pattern belonging to another zone, and the game throws when it reads them to work out what to draw
+on the map — 96 times in the same session, from `WeatherRegistry.CalculateZoneMapData`, besides the
+three updates lost outright inside `NetworkWeatherManager.Apply`.
+
+The patcher answers the same question from the configurations loaded right now: the zone's own
+pattern for that state, or failing that its pattern for the same weather, matched on the metadata the
+game uses to describe one. Whatever still ends up in a forecast is checked once the update has been
+applied, and an entry naming another zone's pattern is dropped rather than left for the map to read.
+
+## The ids a client sends back
+
+Ranching Together names an actor's kind by the index the save system gives its identifiable type, and
+those indexes are per-machine: one extra content mod renumbers everything after it. The mod handles
+one direction — on connection the host sends its whole table as reference ids and the client rewrites
+its lookup to match — but what the client sends back is numbered by its own table:
+
+```csharp
+public static int GetPersistentID(IdentifiableType type) =>          // SR2MP 0.3.8
+    SRSingleton<GameContext>.Instance.AutoSaveDirector._saveReferenceTranslation.GetPersistenceId(type);
+```
+
+While both players run exactly the same mods the two numberings coincide and nothing shows. As soon
+as they differ, everything the client sends arrives on the host as the wrong kind of thing.
+
+The patcher keeps the table the host sent and puts a client's outgoing ids through it. A type the
+host has no id for is named once in the log rather than sent as something else, and the actor table
+is left alone while connected, since it holds the host's numbering rather than this game's.
 
 ## The floating actors
 
@@ -94,6 +159,9 @@ Together's hand-back drops.
 ```
 [Multiplayer_Mod_Patcher] Ranching Together found (v0.3.8.0).
 [Multiplayer_Mod_Patcher] Watchdog installed on Ranching Together's actors.
+[Multiplayer_Mod_Patcher] Gardens keep the grower definition the crop actually grows from.
+[Multiplayer_Mod_Patcher] Weather forecasts are kept to each zone's own patterns.
+[Multiplayer_Mod_Patcher] Actor types are sent to the host under the host's own ids.
 [Multiplayer_Mod_Patcher] Ranching Together actor table refreshed: 0 types added, 770 known.
 [Multiplayer_Mod_Patcher] Watchdog: 3 actors left without a live owner, 3 claimed back.
 ```

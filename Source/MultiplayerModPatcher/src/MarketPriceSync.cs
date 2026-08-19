@@ -28,6 +28,8 @@ namespace MultiplayerModPatcher;
 /// </summary>
 internal static class MarketPriceSync
 {
+    private static int _applied;
+
     private static PropertyInfo _marketUi;
     private static MethodInfo _econUpdate;
 
@@ -135,6 +137,12 @@ internal static class MarketPriceSync
             }
 
             Refresh();
+
+            // The first one says the board is actually being synchronised, which a session where
+            // nothing moves cannot otherwise show.
+            if (_applied++ == 0)
+                Main.Log.Msg($"Market prices applied from the network ({ordered.Count} plorts).");
+
             return false;
         }
         catch (Exception e)
@@ -142,6 +150,44 @@ internal static class MarketPriceSync
             Main.Log.Warning($"Market update left to Ranching Together: {e.Message}");
             return true;
         }
+    }
+
+    /// <summary>
+    /// Writes the whole board to the log, plort by plort, in the order the two machines agree on.
+    /// Two players pressing the key at the same moment can then be compared line for line, which is
+    /// the only way to tell "the prices differ" from "the prices are on the wrong plorts".
+    /// </summary>
+    public static void Snapshot()
+    {
+        List<PlortEconomyDirector.CurrValueEntry> ordered = Ordered();
+        if (ordered == null)
+        {
+            Main.Log.Msg("No market to describe.");
+            return;
+        }
+
+        Main.Log.Msg($"Market board, {ordered.Count} plort(s):");
+        foreach (PlortEconomyDirector.CurrValueEntry entry in ordered)
+            Main.Log.Msg($"  {Name(entry)} = {entry.CurrValue:0.##} (was {entry.PrevValue:0.##})");
+    }
+
+    /// <summary>The plort an entry prices, named the same way on both machines.</summary>
+    private static string Name(PlortEconomyDirector.CurrValueEntry entry)
+    {
+        PlortEconomyDirector economy = SRSingleton<SceneContext>.Instance?.PlortEconomyDirector;
+        if (economy?._currValueMap == null) return "<unknown>";
+
+        Il2CppSystem.Collections.Generic.Dictionary<IdentifiableType, PlortEconomyDirector.CurrValueEntry>
+            .Enumerator entries = economy._currValueMap.GetEnumerator();
+
+        while (entries.MoveNext())
+        {
+            var current = entries.Current;
+            if (current.Value == entry && current.Key != null)
+                return current.Key.ReferenceId ?? current.Key.name;
+        }
+
+        return "<unknown>";
     }
 
     /// <summary>Redraws the board, the way the handler being replaced did.</summary>

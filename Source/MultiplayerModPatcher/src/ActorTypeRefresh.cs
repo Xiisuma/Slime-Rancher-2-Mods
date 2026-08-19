@@ -19,6 +19,14 @@ internal static class ActorTypeRefresh
     {
         if (!SR2MPBridge.Available) return;
 
+        // On a client the table holds the host's numbering, handed over on connection. Adding local
+        // ids to it there would put two numberings in one table and undo the translation.
+        if (ActorTypeIdTranslation.ConnectedAsClient())
+        {
+            Main.Log.Msg("Actor table left alone: it holds the host's numbering while connected.");
+            return;
+        }
+
         IDictionary<int, IdentifiableType> actorTypes = SR2MPBridge.ActorTypes();
         if (actorTypes == null)
         {
