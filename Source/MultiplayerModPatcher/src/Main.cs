@@ -53,6 +53,7 @@ public class Main : MelonMod
             MarketPriceSync.Install(HarmonyInstance);
             GardenSync.Install(HarmonyInstance);
             WeatherPatternGuard.Install(HarmonyInstance);
+            ActorTypeIdTranslation.Install(HarmonyInstance);
         }
         else
         {
@@ -69,6 +70,7 @@ public class Main : MelonMod
     public override void OnUpdate()
     {
         OwnershipWatchdog.Report();
+        ActorTypeIdTranslation.Report();
 
         if (_snapshotKey.Value.Length > 0 && Pressed(_snapshotKey.Value))
         {

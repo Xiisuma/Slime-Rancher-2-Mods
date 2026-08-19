@@ -22,6 +22,7 @@ references it: without the multiplayer mod, the patcher says so in the log and s
 |---|---|
 | A crop planted by the other player is remembered as the wrong patch, or not planted at all | Reads the grower definition off the patch that was actually planted instead of guessing it from a hash table |
 | A zone's forecast is built from another zone's weather | Resolves the pattern from the zone's own configuration, and drops what still belongs elsewhere |
+| What a client sends is numbered by its own table, not the host's | Translates outgoing type ids through the table the host handed over on connection |
 | Market prices land on the wrong plorts | Packs and unpacks the price update in reference-id order instead of by hash-table position |
 | A modded slime or plort cannot be described in a packet | Gives every modded identifiable type a persistence id, in reference-id order, so both machines compute the same one |
 | Ranching Together built its actor table before a content mod registered | Rebuilds that table once the save is running |
@@ -94,6 +95,25 @@ pattern for that state, or failing that its pattern for the same weather, matche
 game uses to describe one. Whatever still ends up in a forecast is checked once the update has been
 applied, and an entry naming another zone's pattern is dropped rather than left for the map to read.
 
+## The ids a client sends back
+
+Ranching Together names an actor's kind by the index the save system gives its identifiable type, and
+those indexes are per-machine: one extra content mod renumbers everything after it. The mod handles
+one direction — on connection the host sends its whole table as reference ids and the client rewrites
+its lookup to match — but what the client sends back is numbered by its own table:
+
+```csharp
+public static int GetPersistentID(IdentifiableType type) =>          // SR2MP 0.3.8
+    SRSingleton<GameContext>.Instance.AutoSaveDirector._saveReferenceTranslation.GetPersistenceId(type);
+```
+
+While both players run exactly the same mods the two numberings coincide and nothing shows. As soon
+as they differ, everything the client sends arrives on the host as the wrong kind of thing.
+
+The patcher keeps the table the host sent and puts a client's outgoing ids through it. A type the
+host has no id for is named once in the log rather than sent as something else, and the actor table
+is left alone while connected, since it holds the host's numbering rather than this game's.
+
 ## The floating actors
 
 Ranching Together freezes the rigidbody of every actor it does not own locally
@@ -141,6 +161,7 @@ Together's hand-back drops.
 [Multiplayer_Mod_Patcher] Watchdog installed on Ranching Together's actors.
 [Multiplayer_Mod_Patcher] Gardens keep the grower definition the crop actually grows from.
 [Multiplayer_Mod_Patcher] Weather forecasts are kept to each zone's own patterns.
+[Multiplayer_Mod_Patcher] Actor types are sent to the host under the host's own ids.
 [Multiplayer_Mod_Patcher] Ranching Together actor table refreshed: 0 types added, 770 known.
 [Multiplayer_Mod_Patcher] Watchdog: 3 actors left without a live owner, 3 claimed back.
 ```
