@@ -52,6 +52,7 @@ public class Main : MelonMod
             WeatherGuard.Install(HarmonyInstance);
             MarketPriceSync.Install(HarmonyInstance);
             GardenSync.Install(HarmonyInstance);
+            WeatherPatternGuard.Install(HarmonyInstance);
         }
         else
         {
@@ -69,7 +70,11 @@ public class Main : MelonMod
     {
         OwnershipWatchdog.Report();
 
-        if (_snapshotKey.Value.Length > 0 && Pressed(_snapshotKey.Value)) OwnershipWatchdog.Snapshot();
+        if (_snapshotKey.Value.Length > 0 && Pressed(_snapshotKey.Value))
+        {
+            OwnershipWatchdog.Snapshot();
+            WeatherPatternGuard.Snapshot();
+        }
     }
 
     /// <summary>
@@ -89,5 +94,6 @@ public class Main : MelonMod
     {
         PersistenceRegistration.Run();
         ActorTypeRefresh.Run();
+        WeatherPatternGuard.Describe();
     }
 }

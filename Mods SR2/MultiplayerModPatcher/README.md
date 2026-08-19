@@ -21,6 +21,7 @@ references it: without the multiplayer mod, the patcher says so in the log and s
 | Problem | What the patcher does |
 |---|---|
 | A crop planted by the other player is remembered as the wrong patch, or not planted at all | Reads the grower definition off the patch that was actually planted instead of guessing it from a hash table |
+| A zone's forecast is built from another zone's weather | Resolves the pattern from the zone's own configuration, and drops what still belongs elsewhere |
 | Market prices land on the wrong plorts | Packs and unpacks the price update in reference-id order instead of by hash-table position |
 | A modded slime or plort cannot be described in a packet | Gives every modded identifiable type a persistence id, in reference-id order, so both machines compute the same one |
 | Ranching Together built its actor table before a content mod registered | Rebuilds that table once the save is running |
@@ -71,6 +72,28 @@ The patcher plants the crop first and reads the definition back off the patch th
 which is the game's own answer and needs no guess about deluxe. A plot too far away to be loaded
 falls back to a lookup that picks by patch prefab rather than by hash order.
 
+## The weather
+
+Ranching Together maps a weather state to the pattern that plays it through a lookup built once,
+from whatever the zone configurations held at that moment. The state lists those patterns play are
+filled as zones come to life, so most of them are still empty when the snapshot is taken — and
+rather than say a state is unknown, the lookup falls back to any pattern with the same state name,
+which is always the one loaded first:
+
+```
+Using fallback pattern for Luminous Strand / Rain Light State: Rain Pattern Fields   # SR2MP 0.3.8
+```
+
+One evening of two-player ranching produced 2 177 of those lines. The forecasts they build name a
+pattern belonging to another zone, and the game throws when it reads them to work out what to draw
+on the map — 96 times in the same session, from `WeatherRegistry.CalculateZoneMapData`, besides the
+three updates lost outright inside `NetworkWeatherManager.Apply`.
+
+The patcher answers the same question from the configurations loaded right now: the zone's own
+pattern for that state, or failing that its pattern for the same weather, matched on the metadata the
+game uses to describe one. Whatever still ends up in a forecast is checked once the update has been
+applied, and an entry naming another zone's pattern is dropped rather than left for the map to read.
+
 ## The floating actors
 
 Ranching Together freezes the rigidbody of every actor it does not own locally
@@ -117,6 +140,7 @@ Together's hand-back drops.
 [Multiplayer_Mod_Patcher] Ranching Together found (v0.3.8.0).
 [Multiplayer_Mod_Patcher] Watchdog installed on Ranching Together's actors.
 [Multiplayer_Mod_Patcher] Gardens keep the grower definition the crop actually grows from.
+[Multiplayer_Mod_Patcher] Weather forecasts are kept to each zone's own patterns.
 [Multiplayer_Mod_Patcher] Ranching Together actor table refreshed: 0 types added, 770 known.
 [Multiplayer_Mod_Patcher] Watchdog: 3 actors left without a live owner, 3 claimed back.
 ```
